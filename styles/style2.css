@@ -149,6 +149,7 @@ nav ul li a {
 .authorize-button .text-container {
     font-family: "Roboto", arial, sans-serif;
     font-weight: 500;
+    color: #fff;
     letter-spacing: .21px;
     font-size: 16px;
     line-height: 48px;

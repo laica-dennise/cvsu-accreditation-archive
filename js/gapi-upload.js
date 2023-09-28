@@ -1,17 +1,34 @@
 // TODO: Set the below credentials
+const {google} = require('googleapis');
+const path = require('path')
+const fs = require('fs')
+const targetFolderId = '1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ'
+
 const CLIENT_ID = '75132863473-h6i0tqj5tuc7jbm6ptjgrlb7snvv8im6.apps.googleusercontent.com';
 const CLIENT_SECRET = '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';
+
+const KEYFILEPATH = 'C:\\xampp\\htdocs\\cvsu_accrsystem\\cvsu-accreditation-37a00b400711.json';
 
 // Discovery URL for APIs used by the quickstart
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
 
 // Set API access scope before proceeding authorization request
-const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const SCOPES = 'https://www.googleapis.com/auth/drive';
 let tokenClient;
 let gapiInited = false;
 let gisInited = false;
 
-document.getElementById('authorize_button').style.visibility = 'hidden';
+const auth = new google.auth.GoogleAuth( {
+    keyFile: KEYFILEPATH,
+    scopes: SCOPES
+})
+
+const driveService = google.drive( {
+    version: 'v3',
+    auth
+})
+
+//document.getElementById('authorize_button').style.visibility = 'hidden';
 document.getElementById('signout_button').style.visibility = 'hidden';
 document.getElementById('fileInput').style.visibility = 'hidden';
 document.getElementById('uploadButton').style.visibility = 'hidden';
@@ -33,7 +50,6 @@ async function initializeGapiClient() {
 		discoveryDocs: [DISCOVERY_DOC],
 	});
 	gapiInited = true;
-	maybeEnableButtons();
 }
 
 /**
@@ -46,7 +62,6 @@ function gisLoaded() {
 		callback: '', // defined later
 	});
 	gisInited = true;
-	maybeEnableButtons();
 }
 
 /**
@@ -66,15 +81,15 @@ function handleAuthClick() {
 		if (resp.error !== undefined) {
 			throw (resp);
 		}
-		document.getElementById('signout_button').style.visibility = 'visible';
+		/*document.getElementById('signout_button').style.visibility = 'visible';
         document.getElementById('authorize_button').style.visibility = 'hidden';
         document.getElementById('fileInput').style.visibility = 'visible';
 		document.getElementById('uploadButton').style.visibility = 'visible';
-		//await uploadFile();
+		await uploadFile();*/
 
 	};
 
-	if (gapi.client.getToken() === null) {
+	if (gapi.client.getToken() !== null) {
 		// Prompt the user to select a Google Account and ask for consent to share their data
 		// when establishing a new session.
 		tokenClient.requestAccessToken({ prompt: 'consent' });
@@ -82,11 +97,12 @@ function handleAuthClick() {
 		// Skip display of account chooser and consent dialog for an existing session.
 		tokenClient.requestAccessToken({ prompt: '' });
 	}
+
 }
 
-/**
+/*
  *  Sign out the user upon button click.
- */
+
 function handleSignoutClick() {
 	const token = gapi.client.getToken();
 	if (token !== null) {
@@ -94,14 +110,14 @@ function handleSignoutClick() {
 		gapi.client.setToken('');
 		document.getElementById('content').style.display = 'none';
 		document.getElementById('content').innerHTML = '';
-		document.getElementById('authorize_button').value = 'Authorize';
+		document.getElementById('authorize_button').style.visibility = 'visible';
 		document.getElementById('signout_button').style.visibility = 'hidden';
         document.getElementById('fileInput').style.visibility = 'hidden';
         document.getElementById('uploadButton').style.visibility = 'hidden';
 	}
-}
+}*/
 
-function uploadFile() {
+async function uploadFile(auth) {
             
     const fileInput = document.getElementById('fileInput');
     const selectedFile = fileInput.files[0];
@@ -112,43 +128,71 @@ function uploadFile() {
     }
 
     // Check if the selected file type is allowed
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg'];
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(selectedFile.type)) {
-        alert('Only PDF, DOCX, PNG, and JPG files are allowed.');
+        alert('Only .PDF, .DOCX, .PNG, .JPEG, and .JPG files are allowed.');
         return;
     }
 
     var file = new Blob([fileInput], {type: selectedFile.type});
 
-    var metadata = {
+    var fileMetaData = {
 		'name': selectedFile.name, // Filename at Google Drive
 		'mimeType': selectedFile.type, // mimeType at Google Drive
         'body': selectedFile,
-		'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ'] // Folder ID at Google Drive which is optional*/
+		'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ'] // Folder ID at Google Drive which is optional
     };
 
-    /*var fileMetadata = {
-        name: selectedFile.name,
-        parents: ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ']
-    };
+	let response = await driveService.files.create( {
+        resource: fileMetaData,
+        media: media
+    })
 
-    var media = {
-        mimeType: selectedFile.type,
-        body: selectedFile,
-    };*/
+	switch(response.status) {
+        case 200:
+            document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + response.data.fileId + "</b>";
+            break;
+
+        default:
+            console.error('Error uploading file, ' + response.errors)
+            break;
+    }
             
-        var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
-        var form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-        form.append('file', fileInput);
+	/*var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
+	var form = new FormData();
+	form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+	form.append('file', fileInput);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-        xhr.responseType = 'json';
-        xhr.onload = () => {
-            document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + xhr.response.id + "</b>";
-            document.getElementById('content').style.display = 'block';
-        };
-        xhr.send(form);
+	var xhr = new XMLHttpRequest();
+	xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
+	xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+	xhr.responseType = 'json';
+	xhr.onload = () => {
+		document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + xhr.response.id + "</b>";
+	};
+	xhr.send(form);*/
+}
+
+async function generatePublicUrl (auth) {
+	try {
+        const fileId = '1sMMYwhcixUvIbQWlvNO4MaVgiBeRxA8m';
+        await driveService.permissions.create({
+            fileId: fileId,
+            requestBody: {
+                role: 'reader',
+                type: 'anyone'
+            }
+        })
+
+        //webContentLink is download link, webViewLink is for view link
+        const result = await driveService.files.get({
+            fileId: fileId,
+            fields: 'webViewLink, webContentLink'
+        })
+
+        window("The file view link is " + result.data.webViewLink + "." );
+
+    } catch (error) {
+        window.alert(error.message);
+    }
 }
