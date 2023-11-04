@@ -34,7 +34,7 @@ $user_info = $google_oauth->userinfo->get();
           <p class="title">CvSU Accreditation Archive System</p>
         <div class="menu" style=>
           <button class="menu-button">
-            <img src="<?=$user_info['picture'];?>" class="menu-icon">
+            <img src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" class="menu-icon">
           </button>
           <div class="menu-content">
             <a href="profile.php">Profile</a>
@@ -69,7 +69,7 @@ $user_info = $google_oauth->userinfo->get();
         <div class="profile-box">
           <div class="profile-info">
           <ul>
-            <li><img src="<?=$user_info['picture'];?>"></li>
+            <li><img src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer"></li>
             <li><strong>ID:</strong> <?=$user_info['id'];?></li>
             <li><strong>Full Name:</strong> <?=$user_info['givenName'];?> <?=$user_info['familyName'];?></li>
             <li><strong>Email:</strong> <?=$user_info['email'];?></li>
@@ -78,11 +78,9 @@ $user_info = $google_oauth->userinfo->get();
       </div>
       <div class="upload-file">
         <button id="authorizationButton" onclick="handleAuthClick()">Authorize</button>
-        <form action="upload.php" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" id="fileInput" accept=".pdf, .docx, .png, .jpg">
+        <input type="file" name="file" id="fileInput" accept=".pdf, .docx, .png, .jpg, .jpeg">
         <button id="uploadButton" onclick="uploadFile()" type="submit">Upload File</button>
         <button id="generateLink" onclick="generatePublicUrl()">Generate Link</button>
-        </form>
       </div>
     </div>
 
@@ -104,13 +102,12 @@ $user_info = $google_oauth->userinfo->get();
     </script>
 
     <script type="text/javascript" src="./js/gapi-upload.js"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-      onload="gapiLoaded()"></script>
-    <script async defer src="https://accounts.google.com/gsi/client"
-      onload="gisLoaded()"></script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.0.min.js"></script>
   </body>
 </html>

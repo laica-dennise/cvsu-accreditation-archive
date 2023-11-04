@@ -13,6 +13,7 @@
     "google-auth-library": "^9.0.0",
     "googleapis": "^126.0.1",
     "mime-types": "^2.1.35",
-    "node.js": "^0.0.1-security"
+    "node.js": "^0.0.1-security",
+    "requirejs": "^2.3.6"
   }
 }
