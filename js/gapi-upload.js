@@ -8,7 +8,7 @@ const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/res
 const KEYFILEPATH = 'C:\\xampp\\htdocs\\cvsu_accrsystem\\cvsu-accreditation-37a00b400711.json';
 
 // Set API access scope before proceeding authorization request
-const SCOPES = 'https://www.googleapis.com/auth/drive';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 let tokenClient;
 let gapiInited = false;
 let gisInited = false;
@@ -130,12 +130,11 @@ function uploadFile() {
         return;
     }
 
-    var file = new Blob([fileInput], {type: selectedFile.type});
+    var file = new Blob([selectedFile], {type: selectedFile.type});
 
     var metadata = {
 		'name': selectedFile.name, // Filename at Google Drive
 		'mimeType': selectedFile.type, // mimeType at Google Drive
-        'body': selectedFile,
 		'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ'] // Folder ID at Google Drive which is optional
     };
 
@@ -185,7 +184,6 @@ function uploadFile() {
 			//document.getElementById("downloadLink").value = data.downloadLink;
 
 			//document.cookie = "file_id=" + data.fileId;
-			//document.cookie = "file_name=" + data.fileName;
 			//document.cookie = "view_link=" + data.viewLink;
 			//document.cookie = "download_link=" + data.downloadLink;
 
@@ -198,8 +196,34 @@ function uploadFile() {
             console.error('Error uploading file, ' + response.errors)
             break;
     }*/
+	
+	var formData = new FormData();
+    formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    // set file as blob formate
+    formData.append("file", selectedFile);
+    fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+        method: 'POST',
+        headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+        body: formData
+    }).then(function (response) {
+        return response.json();
+    }).then(function (value) {
+        console.log(value);
+        // file is uploaded
+		document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + value.id + value.name + value.webViewLink + value.webContentLink;
+		localStorage.setItem('file_id', value.id);
+		localStorage.setItem('file_name', value.name);
+		localStorage.setItem('file_viewLink', value.webViewLink);
+		localStorage.setItem('file_downloadLink', value.webContentLink);
+		document.cookie = "file_id=" + value.id;
+		document.cookie = "file_name=" + value.name;
+		document.cookie = "view_link=" + value.webViewLink;
+		document.cookie = "download_link=" + value.webContentLink;
+		
+		//document.getElementById('upload').submit();
+    });
             
-	var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
+	/*var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
 	var form = new FormData();
 	form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
 	form.append('file', fileInput);
@@ -213,9 +237,10 @@ function uploadFile() {
 	xhr.onload = () => {
 		document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + xhr.response.id + xhr.response.webViewLink + xhr.response.webContentLink;
 		document.getElementById('content').style.display = 'block';
-		localStorage.setItem('file_details', xhr.response.id);
+		localStorage.setItem('file_id', xhr.response.id);
 		localStorage.setItem('file_viewLink', xhr.response.webViewLink);
 		localStorage.setItem('file_downloadLink', xhr.response.webContentLink);
+		console.log(xhr.response);
 	};
 	xhr.send(form);
 		/*$.ajax({
