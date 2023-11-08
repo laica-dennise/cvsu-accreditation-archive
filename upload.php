@@ -30,14 +30,11 @@ $file_id = clean_data($_POST['file_id']);
 $file_viewLink = clean_data($_POST['view_link']);
 $file_downloadLink = clean_data($_POST['download_link']);*/
 
-//$file_viewLink = $_COOKIE['object.viewLink'];
-//$file_downloadLink = $_COOKIE['object.downloadLink'];
+//$file_id = $_COOKIE['object.file_id'];
+//$file_viewLink = $_COOKIE['object.view_link'];
+//$file_downloadLink = $_COOKIE['object.download_link'];
 
 //$data = json_decode(file_get_contents("php://input"), true);
-
-$file_id = json_decode($_POST["fileId"]);
-$file_viewLink = json_decode($_POST["viewLink"]);
-$file_downloadLink = json_decode($_POST["downloadLink"]);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["file"]) && $_FILES["file"]["error"] == 0) {

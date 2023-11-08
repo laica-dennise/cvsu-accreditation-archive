@@ -40,7 +40,7 @@ async function uploadFile (auth) {
 
     switch(response.status) {
         case 200:
-            console.log(response.data.fileId)
+            console.log(response.data)
             break;
 
         default:
@@ -49,7 +49,7 @@ async function uploadFile (auth) {
     }
 }
 
-//uploadFile(auth).catch(console.error);
+//uploadFile(auth);
 
 //Delete specific file
 async function deleteFile (auth) {
@@ -70,7 +70,7 @@ async function deleteFile (auth) {
 //Get Public URLs for specific file
 async function generatePublicUrl (auth) {
     try {
-        const fileId = '1eqlKgM4bly7HUEikczlYrGEM6LpnyPgp';
+        const fileId = '1852QyLG3BOGFgLn0u84MPSRLm1WqFo4p';
         await driveService.permissions.create({
             fileId: fileId,
             requestBody: {
@@ -82,11 +82,11 @@ async function generatePublicUrl (auth) {
         //webContentLink is download link, webViewLink is for view link
         const result = await driveService.files.get({
             fileId: fileId,
-            fields: 'webViewLink, webContentLink, owners(displayName,emailAddress)'
+            fields: 'webViewLink, webContentLink, name'
         })
 
         console.log(result.data);
-        console.log(result.data.webContentLink, result.data.webViewLink, result.data.owners);
+        console.log(result.data.webContentLink, result.data.webViewLink, result.data.name);
 
     } catch (error) {
         console.log(error.message);

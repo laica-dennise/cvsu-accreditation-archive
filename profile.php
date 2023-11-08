@@ -78,9 +78,10 @@ $user_info = $google_oauth->userinfo->get();
       </div>
       <div class="upload-file">
         <button id="authorizationButton" onclick="handleAuthClick()">Authorize</button>
+        <form action="upload.php" method="POST" enctype="multipart/form-data" id="upload" onsubmit="return false;">
         <input type="file" name="file" id="fileInput" accept=".pdf, .docx, .png, .jpg, .jpeg">
-        <button id="uploadButton" onclick="uploadFile()" type="submit">Upload File</button>
-        <button id="generateLink" onclick="generatePublicUrl()">Generate Link</button>
+        <input id="uploadButton" onclick="uploadFile();dbUpload();" type="submit" value="Upload File">
+        </form>
       </div>
     </div>
 
@@ -98,6 +99,16 @@ $user_info = $google_oauth->userinfo->get();
         document.getElementById("mySidenav").style.width = "0";
         document.getElementById("sidenav").style.marginLeft= "0";
         document.getElementById("main").style.marginLeft = "0";
+      }
+    </script>
+
+    <script>
+      function delayDb() {
+        document.getElementById('upload').submit();
+      }
+
+      function dbUpload() {
+        setTimeout("delayDb()", 10000);
       }
     </script>
 
