@@ -14,6 +14,27 @@ if($client->isAccessTokenExpired()){
 }
 $google_oauth = new Google_Service_Oauth2($client);
 $user_info = $google_oauth->userinfo->get();
+
+$user = 'root';
+$password = '';
+ 
+$database = 'cvsuaccr_db';
+ 
+$servername='127.0.0.1';
+$mysqli = new mysqli($servername, $user,
+                $password, $database);
+ 
+// Checking for connections
+if ($mysqli->connect_error) {
+    die('Connect Error (' .
+    $mysqli->connect_errno . ') '.
+    $mysqli->connect_error);
+}
+ 
+// SQL query to select data from database
+$sql = " SELECT * FROM files WHERE file_directory = 'CAFENR' ORDER BY id ASC ";
+$result = $mysqli->query($sql);
+$mysqli->close();
 ?>
 <<!DOCTYPE html>
 <html>
@@ -24,6 +45,21 @@ $user_info = $google_oauth->userinfo->get();
         <title>CvSU Accreditation Archive System</title>
         <link rel="stylesheet" type="text/css" href="styles/style4.css" />
 
+        <style>
+            .file-query {
+                background: linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .7));
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 8px;
+                border-bottom: 1px solid #000;
+                text-align: left;
+            }
+
+            .results:hover {
+                background: linear-gradient(rgba(0, 0, 0, .1), rgba(0, 0, 0, .1));
+            }
+        </style>
     </head>
   <body>
 
@@ -59,7 +95,6 @@ $user_info = $google_oauth->userinfo->get();
           <a href="#">College of Medicine</a>
           <a href="#">Graduate School and Open Learning College</a>
         </div>
-
         <div id="sidenav">
           <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
         </div>
@@ -97,6 +132,40 @@ $user_info = $google_oauth->userinfo->get();
         <input id="uploadButton" onclick="uploadFile();dbUpload();" type="submit" value="Upload File">
         </form>
       </div>
+      <section>
+            <table class="file-query">
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>OWNER</th>
+                    <th>TYPE</th>
+                    <th>SIZE</th>
+                    <th>DATE UPLOADED</th>
+                    <th colspan="3">ACTIONS</th>
+                </tr>
+
+                <?php
+                    while($rows=$result->fetch_assoc())
+                    {
+                ?>
+                <tr class="results">
+                    <td><?php echo $rows['id'];?></td>
+                    <td><?php echo $rows['file_name'];?></td>
+                    <td><?php echo $rows['file_owner'];?></td>
+                    <td><?php echo $rows['file_type'];?></td>
+                    <td><?php echo $rows['file_size'];?></td>
+                    <td><?php echo $rows['upload_date'];?></td>
+                    <td>
+                        <button class="view" onclick="window.location.href='<?php echo $rows['file_viewLink'];?>'">View</button>
+                        <button class="download" onclick="window.location.href='<?php echo $rows['file_downloadLink'];?>'">Download</button>
+                        <button class="delete" onclick="deleteFile('<?php echo $rows['file_id']?>')">Delete</button>
+                    </td>
+                </tr>
+                <?php
+                    }
+                ?>
+            </table>
+        </section>
     </div>
 
     <div id="content" class="success message"><?php if(isset($message)) { echo $message; } ?>

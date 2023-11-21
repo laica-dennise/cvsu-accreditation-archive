@@ -44,7 +44,7 @@ $db_connection = new mysqli($db_host, $db_user, $db_password, $db_name);
     $sql = "UPDATE files SET file_id = '$file_id', file_viewLink = '$file_viewLink', file_downloadLink = '$file_downloadLink' WHERE file_name = '$file_name'";
 
     if ($db_connection->query($sql) === TRUE) {
-        echo "The file has been uploaded in the database.";
+        echo "";
     } else {
         echo "Sorry, there was an error uploading your file: " . $db_connection->error;
     }

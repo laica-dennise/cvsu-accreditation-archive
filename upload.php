@@ -14,28 +14,6 @@ $user_info = $google_oauth->userinfo->get();
 $first_name = $user_info['given_name'];
 $last_name = $user_info['family_name'];
 
-/*function clean_data($data){   // sanitizes inputs
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-
-// need to decode JSON, if you don't use JSON just pass the $_POST to clean_data()
-$fileid_dirty = json_decode($_POST['file_id']);
-$viewLink_dirty = json_decode($_POST['file_viewLink']);
-$downloadLink_dirty = json_decode($_POST['file_downloadLink']);
-
-// takes parameters from AJAX call and passes them to clean_data() for sanitization
-$file_id = clean_data($_POST['file_id']);
-$file_viewLink = clean_data($_POST['view_link']);
-$file_downloadLink = clean_data($_POST['download_link']);*/
-
-//$file_id = $_COOKIE['object.file_id'];
-//$file_viewLink = $_COOKIE['object.view_link'];
-//$file_downloadLink = $_COOKIE['object.download_link'];
-
-//$data = json_decode(file_get_contents("php://input"), true);
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["file"]) && $_FILES["file"]["error"] == 0) {
         $target_dir = "files/";
@@ -51,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $file_size = $_FILES["file"]["size"];
                 $file_type = $_FILES["file"]["type"];
                 $file_owner = $first_name . " " . $last_name;
+                $file_directory = $_POST["directories"];
 
                 $db_host = 'localhost';
                 $db_user = 'root';
@@ -66,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         die ("Connection Failed - ".$db_connection->connect_error);
                     }
 
-                    $sql = "INSERT INTO files (file_name, file_size, file_type, file_owner, file_id, file_viewLink, file_downloadLink) VALUES ('$file_name', '$file_size', '$file_type', '$file_owner', '$file_id', '$file_viewLink', '$file_downloadLink')";
+                    $sql = "INSERT INTO files (file_name, file_size, file_type, file_owner, file_id, file_viewLink, file_downloadLink, file_directory) VALUES ('$file_name', '$file_size', '$file_type', '$file_owner', '$file_id', '$file_viewLink', '$file_downloadLink', '$file_directory')";
 
                     if ($db_connection->query($sql) === TRUE) {
                         echo "The file " . basename($_FILES["file"]["name"]) . " has been uploaded in the database.";
@@ -83,29 +62,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 header("Location: upload_success.php");
-
-/*$db_host = 'localhost';
-$db_user = 'root';
-$db_password = '';
-$db_name = 'cvsuaccr_db';
-
-$db_connection = new mysqli($db_host, $db_user, $db_password, $db_name);
-
-$file_name = $_POST['file_name'];
-$file_id = $_POST['file_id'];
-$file_viewLink = $_POST['view_link'];
-$file_downloadLink = $_POST['download_link'];
-
-// CHECK DATABASE CONNECTION
-if($db_connection->error){
-    die ("Connection Failed - ".$db_connection->connect_error);
-}
-
-$sql = "UPDATE files (file_id, file_viewLink, file_downloadLink) SET ('$file_id', '$file_viewLink', '$file_downloadLink') WHERE file_name = '$file_name'";
-
-if ($db_connection->query($sql) === TRUE) {
-    echo "The file " . basename($_FILES["file"]["name"]) . " has been uploaded in the database.";
-} else {
-    echo "Sorry, there was an error uploading your file: " . $db_connection->error;
-}*/
 ?>
