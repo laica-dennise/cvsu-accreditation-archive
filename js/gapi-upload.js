@@ -13,21 +13,6 @@ let tokenClient;
 let gapiInited = false;
 let gisInited = false;
 
-/*const auth = new google.auth.GoogleAuth( {
-    keyFile: KEYFILEPATH,
-    scopes: SCOPES
-})
-
-const driveService = google.drive( {
-    version: 'v3',
-    auth
-})*/
-
-//document.getElementById('authorize_button').style.visibility = 'hidden';
-//document.getElementById('signout_button').style.visibility = 'hidden';
-//document.getElementById('fileInput').style.visibility = 'hidden';
-//document.getElementById('uploadButton').style.visibility = 'hidden';
-
 /**
  * Callback after api.js is loaded.
  */
@@ -117,6 +102,7 @@ function uploadFile() {
             
     const fileInput = document.getElementById('fileInput');
     const selectedFile = fileInput.files[0];
+	const directory = document.getElementById('directories').value;
 
     if (!selectedFile) {
         alert('Please select a file to upload.');
@@ -132,70 +118,92 @@ function uploadFile() {
 
     var file = new Blob([selectedFile], {type: selectedFile.type});
 
-    var metadata = {
-		'name': selectedFile.name, // Filename at Google Drive
-		'mimeType': selectedFile.type, // mimeType at Google Drive
-		'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ'] // Folder ID at Google Drive which is optional
-    };
-
-    /*var metadata = {
-        name: selectedFile.name,
-        parents: ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ']
-    };
-
-    var media = {
-        mimeType: selectedFile.type,
-        body: selectedFile,
-	};
-
-	var response = driveService.files.create( {
-        resource: metadata,
-        media: media
-    });
-
-    switch(response.status) {
-        case 200:
-			const result = driveService.files.get({
-				fileId: response.data.fileId,
-				fields: 'webViewLink, webContentLink'
-			})
-			var data = {
-				fileName: selectedFile.name,
-				fileId: response.data.fileId,
-				viewLink: result.data.webViewLink,
-				downloadLink: result.data.webContentLink
+	switch (directory) {
+		case "CAFENR":
+			var metadata = {
+				'name': selectedFile.name, // Filename at Google Drive
+				'mimeType': selectedFile.type, // mimeType at Google Drive
+				'parents': ['1TOtgbbPoKIr3JZNyVfP4D6SJdYf3aOW_'] // Folder ID at Google Drive
 			};
-
-			/*var xhr = new XMLHttpRequest();
-
-			xhr.open("POST", "upload.php", true);
-			xhr.setRequestHeader("Content-Type", "application/json");
-			
-			xhr.onreadystatechange = function () {
-				if (xhr.readyState == XMLHttpRequest.DONE) {
-					alert(xhr.responseText);
-				}
+			break;
+		case "CAS":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1_iD1SgmR0j842o0Oo0W2BOohmSf5tbGR']
 			};
-
-			xhr.send(JSON.stringify(data));*/
-
-			//document.getElementById("fileId").value = data.fileId;
-			//document.getElementById("viewLink").value = data.viewLink;
-			//document.getElementById("downloadLink").value = data.downloadLink;
-
-			//document.cookie = "file_id=" + data.fileId;
-			//document.cookie = "view_link=" + data.viewLink;
-			//document.cookie = "download_link=" + data.downloadLink;
-
-			/*document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + data.fileId + data.viewLink + data.downloadLink;
-
-            console.log(response.data.fileId)
-            break;
-
-        default:
-            console.error('Error uploading file, ' + response.errors)
-            break;
-    }*/
+			break;
+		case "CCJ":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1ulh8Z5zVz6iJzO0AXO6GAJQBbP2Dkm7g']
+			};
+			break;
+		case "CED":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1prhnN8SQkVBmg2cO3Nq2RFZXoaYF3bXZ']
+			};
+			break;
+		case "CEMDS":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1EGaDpuwOAqrJrP4vW5WhD5iWAMXQra1j']
+			};
+			break;
+		case "CEIT":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1ShUNEQ9F_wN6Nxuyo-8y9j4JKig8dlmg']
+			};
+			break;
+		case "CON":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1hqDXkWjvcsB0WKNYw_roijPj9eDTC8fn']
+			};
+			break;
+		case "CSPEAR":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1fjGBBGdSEEZmxRIbVl8X-1zFvmIep51o']
+			};
+			break;
+		case "CVMBS":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1JLQ7RBz41Z72CBdcrFKkrjHyCzQbcnlE']
+			};
+			break;
+		case "College of Medicine":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1-adk4eqga1fBQLTReLIKP_eBTUTzF81v']
+			};
+			break;
+		case "Graduate School and Open Learning College":
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1YG4Z0wpBu0X2b4t78yhQ2un4YxyKjc27']
+			};
+			break;
+		default:
+			alert('No file directory selected.');
+			var metadata = {
+				'name': selectedFile.name,
+				'mimeType': selectedFile.type,
+				'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ']
+			};
+	}
 	
 	var formData = new FormData();
     formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
@@ -220,79 +228,58 @@ function uploadFile() {
 		document.cookie = "view_link=" + value.webViewLink;
 		document.cookie = "download_link=" + value.webContentLink;
 		
-		//document.getElementById('upload').submit();
     });
-            
-	/*var accessToken = gapi.auth.getToken().access_token; // Here gapi is used for retrieving the access token.
-	var form = new FormData();
-	form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-	form.append('file', fileInput);
-
-	var xhr = new XMLHttpRequest();
-	xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink,webContentLink');
-	xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-	xhr.responseType = 'json';
-
-	
-	xhr.onload = () => {
-		document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + xhr.response.id + xhr.response.webViewLink + xhr.response.webContentLink;
-		document.getElementById('content').style.display = 'block';
-		localStorage.setItem('file_id', xhr.response.id);
-		localStorage.setItem('file_viewLink', xhr.response.webViewLink);
-		localStorage.setItem('file_downloadLink', xhr.response.webContentLink);
-		console.log(xhr.response);
-	};
-	xhr.send(form);
-		/*$.ajax({
-			type: 'POST',
-			url: 'upload_success.php',
-			data: {
-				file_name: selectedFile.name,
-				file_id: xhr.response.id,
-				view_link: xhr.response.webViewLink,
-				download_link: xhr.response.webContentLink
-			},
-			success: function(response) {
-				alert(response);
-			}
-		});
-	};
-
-	/*var request = gapi.client.request({
-		'path': 'drive/v2/files',
-		'method': 'POST',
-		'headers': {
-			'Content-Type': 'application/json',
-			'Authorization': 'Bearer ' + access_token,
-		},
-		'body': {
-			'title': selectedFile.name,
-			'mimeType': selectedFile.type
-		}
-	});
-
-	request.execute(function (xhr) {
-		localStorage.setItem('file_id', xhr.response.id);
-		localStorage.setItem('file_viewLink', xhr.response.webViewLink);
-		localStorage.setItem('file_downloadLink', xhr.response.webContentLink);
-	});*/
-
-	//xhr.send(form);
-
-	/*var object = {};
-	object.fileId = document.getElementById(xhr.response.id);
-	object.viewLink = document.getElementById(xhr.response.webViewLink);
-	object.downloadLink = document.getElementById(xhr.response.webContentLink);
-
-	var jsonString = JSON.stringify(object);*/
 }
 
-function getDetails() {
-	var accessToken = gapi.auth.getToken().access_token;
-	var xhr = new XMLHttpRequest();
-        xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink,webContentLink');
-        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-        xhr.responseType = 'json';
+async function deleteFile(fileId) {
 
-	document.getElementById('content').innerHTML = "File ID is: " + xhr.response.id + " , view link is: " + xhr.response.webviewLink + " , download link is: " + xhr.response.webContentLink;
+	const accessToken = gapi.client.getToken().access_token;
+
+	const url = 'https://www.googleapis.com/drive/v3/files/' + fileId;
+	return await fetch(url, {
+		method: 'DELETE',
+		headers: {
+		'Authorization': 'Bearer ' + accessToken
+		}
+	}).then(function (response) {
+		return response.json();
+	}).then(function (value) {
+        console.log(value);
+	});
+
+	/*var xhr = new XMLHttpRequest();
+	var boundary = "END_OF_PART";
+	var separation = "\n--"+boundary + "\n";
+
+	var requestBody = ()=>{
+		separation +
+		"Content-Type: application/http\n\n" +
+		"DELETE https://www.googleapis.com/drive/v3/files/" +
+		fileId +
+		"\nAuthorization: Bearer " + accessToken;
+		};
+
+	/*xmlReq.open('DELETE', 'https://www.googleapis.com/drive/v3/files/' + fileId);
+	xmlReq.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+
+	xmlReq.onload = ()=> {
+		console.log(xmlReq.response);
+	};*/
+
+	/*xhr.onload = ()=>{
+		console.log(xhr.response);
+		//handle the response
+	};*/
+	/*xhr.open("DELETE", "https://www.googleapis.com/drive/v3/files/" + {fileId}, true);
+	xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+	//xhr.send(requestBody);
+
+	xhr.onload = ()=>{
+		console.log(xhr.response);
+		//handle the response
+	};*/
+
+	//var xmlReq = new XMLHttpRequest();
+	//xmlReq.open('DELETE', 'https://www.googleapis.com/drive/v3/files/' + fileId);
+	//xmlReq.setRequestHeader('Authorization', 'Bearer ' + gapi.auth.getToken().access_token);
 }
