@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $file_type = $_FILES["file"]["type"];
                 $file_owner = $first_name . " " . $last_name;
                 $file_directory = $_POST["directories"];
+                $file_area = $_POST["area"];
 
                 $db_host = 'localhost';
                 $db_user = 'root';
@@ -45,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         die ("Connection Failed - ".$db_connection->connect_error);
                     }
 
-                    $sql = "INSERT INTO files (file_name, file_size, file_type, file_owner, file_id, file_viewLink, file_downloadLink, file_directory) VALUES ('$file_name', '$file_size', '$file_type', '$file_owner', '$file_id', '$file_viewLink', '$file_downloadLink', '$file_directory')";
+                    $sql = "INSERT INTO files (file_name, file_size, file_type, file_owner, file_directory, file_area) VALUES ('$file_name', '$file_size', '$file_type', '$file_owner', '$file_directory', '$file_area')";
 
                     if ($db_connection->query($sql) === TRUE) {
                         echo "The file " . basename($_FILES["file"]["name"]) . " has been uploaded in the database.";

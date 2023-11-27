@@ -32,7 +32,7 @@ if ($mysqli->connect_error) {
 }
  
 // SQL query to select data from database
-$sql = " SELECT * FROM files WHERE file_directory = 'CAFENR' ORDER BY id ASC ";
+$sql = " SELECT * FROM files WHERE file_directory = 'CSPEAR' ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $mysqli->close();
 ?>
@@ -106,7 +106,7 @@ $mysqli->close();
           <br></br>
           <div class="profile-box">
         <div class="col-md-8">
-		<div class="alert alert-info" style="margin-top:10px;">CAFENR</div>
+		<div class="alert alert-info" style="margin-top:10px;">CSPEAR</div>
         <button id="authorizationButton" onclick="handleAuthClick()">Authorize</button>
 
       <section>

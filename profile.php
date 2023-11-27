@@ -23,6 +23,7 @@ $user_info = $google_oauth->userinfo->get();
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>CvSU Accreditation Archive System</title>
         <link rel="stylesheet" type="text/css" href="styles/style4.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
     </head>
   <body>
@@ -38,8 +39,8 @@ $user_info = $google_oauth->userinfo->get();
           </button>
           <div class="menu-content">
             <a href="profile.php">Profile</a>
-            <a href="#">Uploaded Files</a>
-            <a href="./logout.php">Sign out</a>
+            <a href="uploaded_files.php">Uploaded Files</a>
+            <a href="#" data-toggle="modal" data-target="#logout">Sign out</a>
           </div>
         </div>
       </div>
@@ -48,16 +49,16 @@ $user_info = $google_oauth->userinfo->get();
         <div id="mySidenav" class="side-nav-content">
           <a href="javascript:void(0)" class="close-button" onclick="closeNav()">&times;</a>
           <a href="cafenr.php">CAFENR</a>
-          <a href="#">CAS</a>
-          <a href="#">CCJ</a>
-          <a href="#">CED</a>
-          <a href="#">CEMDS</a>
-          <a href="#">CEIT</a>
-          <a href="#">CON</a>
-          <a href="#">CSPEAR</a>
-          <a href="#">CVMBS</a>
-          <a href="#">College of Medicine</a>
-          <a href="#">Graduate School and Open Learning College</a>
+          <a href="cas.php">CAS</a>
+          <a href="ccj.php">CCJ</a>
+          <a href="ced.php">CED</a>
+          <a href="cemds.php">CEMDS</a>
+          <a href="ceit.php">CEIT</a>
+          <a href="nursing.php">CON</a>
+          <a href="cspear.php">CSPEAR</a>
+          <a href="cvmbs.php">CVMBS</a>
+          <a href="com.php">College of Medicine</a>
+          <a href="graduate_school.php">Graduate School and Open Learning College</a>
         </div>
 
         <div id="sidenav">
@@ -77,11 +78,24 @@ $user_info = $google_oauth->userinfo->get();
         </div>
       </div>
       <div class="upload-file">
-        <button id="authorizationButton" onclick="handleAuthClick()">Authorize</button>
+      <a href="#" id="authorizationButton" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Add File </a>
+    </div>
+
+
+ <!-- Modal -->
+ <div class="modal fade" id="myModal" role="dialog" style="min-width: 1500px">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Upload File</h4>
+        </div>
+        <div class="modal-body">
         <form action="upload.php" method="POST" enctype="multipart/form-data" id="upload" onsubmit="return false;">
         <input type="file" name="file" id="fileInput" accept=".pdf, .docx, .png, .jpg, .jpeg">
         <label for="directories">File Directory:</label>
         <select name="directories" id="directories">
+        <option value=""></option>
           <option value="CAFENR">CAFENR</option>
           <option value="CAS">CAS</option>
           <option value="CCJ">CCJ</option>
@@ -94,10 +108,54 @@ $user_info = $google_oauth->userinfo->get();
           <option value="College of Medicine">College of Medicine</option>
           <option value="Graduate School and Open Learning College">Graduate School and Open Learning College</option>
         </select>
-        <input id="uploadButton" onclick="uploadFile();dbUpload();" type="submit" value="Upload File">
-        </form>
+
+        <br></br>
+        <label for="area">File Area:</label>
+        <select name="area" id="area">
+              <option value=""></option>
+              <option value="Area 1">Vison, Mission, Goals and Objective</option>
+							<option value="Area 2">Faculty</option>
+							<option value="Area 3">Curricular</option>
+							<option value="Area 4">Support to Students</option>
+							<option value="Area 5">Research</option>
+							<option value="Area 6">Extension and Community Involvement</option>
+							<option value="Area 7">Library</option>
+							<option value="Area 8">Physical Plan and Facilities</option>
+							<option value="Area 9">Laboratories</option>
+							<option value="Area 10">Administration</option>
+        </select>
+        </div>
+        <div class="modal-footer">
+        <a href="#" id="uploadButton" onclick="uploadFile();dbUpload();" type="submit" value="Upload File" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload </a>
+        <a href="#"  class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-remove"></span> Cancel </a>
+        </div>
       </div>
     </div>
+  </div>
+</div>
+
+ <!-- Modal logout -->
+ <div class="modal fade" id="logout" role="dialog" style="min-width: 1500px">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"> System </h4>
+        </div>
+        <div class="modal-body">
+          <p> Are you sure you want to sign out? </p>
+        </div>
+        <div class="modal-footer">
+          <a href="./logout.php" class="btn btn-danger" >Sign out</a>
+          <button type="button" class="btn btn-success" data-dismiss="modal"> Close </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
     <div id="content" class="success message"><?php if(isset($message)) { echo $message; } ?>
     </div>

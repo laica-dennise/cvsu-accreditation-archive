@@ -30,11 +30,17 @@ if ($mysqli->connect_error) {
     $mysqli->connect_errno . ') '.
     $mysqli->connect_error);
 }
+
+// getting user info for uploaded files
+$first_name = $user_info['given_name'];
+$last_name = $user_info['family_name'];
+$file_owner = $first_name . " " . $last_name;
  
 // SQL query to select data from database
-$sql = " SELECT * FROM files WHERE file_directory = 'CAFENR' ORDER BY id ASC ";
+$sql = " SELECT * FROM files WHERE file_owner = '$file_owner' ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $mysqli->close();
+
 ?>
 <<!DOCTYPE html>
 <html>
@@ -75,7 +81,7 @@ $mysqli->close();
           </button>
           <div class="menu-content">
             <a href="profile.php">Profile</a>
-            <a href="uploaded_files.php">Uploaded Files</a>
+            <a href="#">Uploaded Files</a>
             <a href="#" data-toggle="modal" data-target="#logout">Sign out</a>
           </div>
         </div>
@@ -106,7 +112,7 @@ $mysqli->close();
           <br></br>
           <div class="profile-box">
         <div class="col-md-8">
-		<div class="alert alert-info" style="margin-top:10px;">CAFENR</div>
+		<div class="alert alert-info" style="margin-top:10px;">My Uploaded Files</div>
         <button id="authorizationButton" onclick="handleAuthClick()">Authorize</button>
 
       <section>
@@ -117,8 +123,10 @@ $mysqli->close();
                     <th>OWNER</th>
                     <th>TYPE</th>
                     <th>SIZE</th>
-                    <th>AREA</th>
                     <th>DATE UPLOADED</th>
+                    <th>File Owner</th>
+                    <th>File Directory</th>
+                    <th>File Area</th>
                     <th colspan="4">ACTIONS</th>
                 </tr>
 
@@ -132,8 +140,10 @@ $mysqli->close();
                     <td><?php echo $rows['file_owner'];?></td>
                     <td><?php echo $rows['file_type'];?></td>
                     <td><?php echo $rows['file_size'];?></td>
-                    <td><?php echo $rows['file_area'];?></td>
                     <td><?php echo $rows['upload_date'];?></td>
+                    <td><?php echo $rows['file_owner'];?></td>
+                    <td><?php echo $rows['file_directory'];?></td>
+                    <td><?php echo $rows['file_area'];?></td>
                     <td>
                         <button class="view" onclick="window.location.href='<?php echo $rows['file_viewLink'];?>'">View</button>
                         <button class="download" onclick="window.location.href='<?php echo $rows['file_downloadLink'];?>'">Download</button>
@@ -159,7 +169,7 @@ $mysqli->close();
           <h4 class="modal-title"> System </h4>
         </div>
         <div class="modal-body">
-          <p> Are you sure you want to sign out? </p>
+          <p> Are you sure you want to Sign Out? </p>
         </div>
         <div class="modal-footer">
           <a href="./logout.php" class="btn btn-danger" >Sign out</a>
@@ -223,7 +233,7 @@ $mysqli->close();
       }
     </script>
 
-<script>
+    <script>
         function deleteClick() {
             document.getElementById('removeDb').click();
         }
