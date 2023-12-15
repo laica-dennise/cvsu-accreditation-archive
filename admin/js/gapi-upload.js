@@ -218,6 +218,7 @@ function uploadFile() {
     }).then(function (value) {
         console.log(value);
         // file is uploaded
+		document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + value.id + value.name + value.webViewLink + value.webContentLink;
 		localStorage.setItem('file_id', value.id);
 		localStorage.setItem('file_name', value.name);
 		localStorage.setItem('file_viewLink', value.webViewLink);
@@ -245,27 +246,6 @@ async function deleteFile(fileId) {
 	}).then(function (value) {
         console.log(value);
 	});
-}
-
-function removeFromDb(fileId) {
-
-	$.ajax({
-        type: 'POST',
-        url: 'delete.php',
-        data: { 'fileId': fileId },
-        success: function(response) {
-            // Handle the response from delete.php
-            console.log(response);
-        },
-        error: function(xhr, status, error) {
-            // Handle errors
-            console.error(xhr.responseText);
-        }
-    });
-}
-
-
-    
 
 	/*var xhr = new XMLHttpRequest();
 	var boundary = "END_OF_PART";
@@ -302,3 +282,4 @@ function removeFromDb(fileId) {
 	//var xmlReq = new XMLHttpRequest();
 	//xmlReq.open('DELETE', 'https://www.googleapis.com/drive/v3/files/' + fileId);
 	//xmlReq.setRequestHeader('Authorization', 'Bearer ' + gapi.auth.getToken().access_token);
+}
