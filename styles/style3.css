@@ -74,90 +74,105 @@ nav ul li a {
     text-shadow: 2px 2px 5px #000000;
 }
 
-.sign-in-box {
-    width: 450px;
+.row {
+    padding-left: 4%;
+    padding-right: 4%;
+    display: flex;
+    height: 88%;
+    align-items: center;
+}
+
+.about-us-box {
+    width: 700px;
     height: 400px;
-    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 60px;
+    background: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, .5));
     box-shadow: 5px 5px 20px #000000;
 }
 
-.sign-in-message {
-    padding-top: 5%;
-    padding-left: 5%;
-    padding-right: 5%;
-    text-decoration: none;
+.col {
+    flex-basis: 50%;
+    padding-left: 8%;
+    padding-right: 8%;
+}
+
+h1 {
     color: #000000;
     font-family: "Roboto", arial, sans-serif;
-    font-size: 40px;
-    font-weight: 550;
-    text-align: center; 
-    text-shadow: -.5px 0 #fff, 0 .5px #fff, .5px 0 #fff, 0 -.5px #fff;
+    font-size: 100px;
+    margin-bottom: 20px;
+    margin-top: 100px;
+    cursor: default;
 }
 
-.authorize-button {
-    position: relative;
-    top: 7%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 10px;
-    display: inline-block;
-    width: 270px;
-    height: 50px;
-    background-color: #4285f4;
-    color: #ffff;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .25);
-    transition: background-color .218s, border-color .218s, box-shadow .218s;
-}
-
-.authorize-button:hover {
-    cursor: pointer;
-    -webkit-box-shadow: 0 0 3px 3px rgba(66, 133, 244, .3);
-    box-shadow: 0 0 3px 3px rgba(66, 133, 244, .3);
-}
-
-.authorize-button:active {
-    background-color: #3367D6;
-    transition: background-color .2s;
-}
-
-.authorize-button .content-wrapper {
-    height: 100%;
-    width: 100%;
-    border: 1px solid transparent;;
-}
-
-.authorize-button img {
-    width: 18px;
-    height: 18px;;
-}
-
-.authorize-button .logo-wrapper {
-    padding: 15px;
-    background: #fff;
-    width: 48px;
-    height: 100%;
-    border-radius: 5px;
-    display: inline-block;
-}
-
-.authorize-button .text-container {
+.about-us {
+    color: #000000;
     font-family: "Roboto", arial, sans-serif;
-    font-weight: 500;
-    color: #fff;
-    letter-spacing: .21px;
-    font-size: 16px;
-    line-height: 48px;
-    vertical-align: top;
-    border: none;
+    font-size: 18px;
+    line-height: 20px;
+    text-align: justify;
+    cursor: default;
+}
+
+.card {
+    width: 200px;
+    height: 230px;
     display: inline-block;
-    text-align: center;
-    width: 210px;
+    border-radius: 10px;
+    padding: 15px 25px;
+    box-sizing: border-box;
+    cursor: pointer;
+    margin: 10px 15px;
+    background-position: center;
+    background-size: cover;
+    box-shadow: 5px 5px 20px #000000;
+    transition: transform 0.5s;
+}
+
+.denn {
+    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/denn.png);
+}
+
+.drey {
+    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/drey.jpg);
+}
+
+.will {
+    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/will.jpg);
+}
+
+.joel {
+    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/joel.jpg);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.denn:hover {
+    background-image: url(/cvsu_accrsystem/images/denn.png);
+}
+
+.drey:hover {
+    background-image: url(/cvsu_accrsystem/images/drey.jpg);
+}
+
+.will:hover {
+    background-image: url(/cvsu_accrsystem/images/will.jpg);
+}
+
+.joel:hover {
+    background-image: url(/cvsu_accrsystem/images/joel.jpg);
+}
+
+h5 {
+    color: #fff;
+    font-family: "Roboto", arial, sans-serif;
+    text-shadow: 0 0 5px #999;
+    margin-top: 0;
+}
+
+.card:hover h5 {
+    text-shadow: 0 0 5px #000000;
 }
 
 .menu { 
