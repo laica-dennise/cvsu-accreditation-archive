@@ -14,6 +14,8 @@ require 'phpmailer/src/SMTP.php';
 if (isset($_POST["send"])) {
  
   $mail = new PHPMailer(true);
+
+  $name = $_POST["first_name"] . " " . $_POST["last_name"];
  
     //Server settings
     $mail->isSMTP();                              //Send using SMTP
@@ -25,9 +27,9 @@ if (isset($_POST["send"])) {
     $mail->Port       = 465;                                    
  
     //Recipients
-    $mail->setFrom( $_POST["email"], $_POST["name"]); // Sender Email and name
+    $mail->setFrom( $_POST["email"], $name); // Sender Email and name
     $mail->addAddress('laicadennise.miranda@cvsu.edu.ph');     //Add a recipient email  
-    $mail->addReplyTo($_POST["email"], $_POST["name"]); // reply to sender email
+    $mail->addReplyTo($_POST["email"], $name); // reply to sender email
  
     //Content
     $mail->isHTML(true);               //Set email format to HTML
@@ -35,13 +37,13 @@ if (isset($_POST["send"])) {
 
     $level = $_POST["user_level"];
     if ($level == "2") {
-      $mail->Body    = "Name: " . $_POST["name"] . "<br>Email: " . $_POST["email"] . "<br>Birthdate: " . $_POST["birthdate"] . "<br>Access Level: Faculty <br>College: " . $_POST["college"]; //email message
+      $mail->Body    = "Name: " . $name . "<br>Email: " . $_POST["email"] . "<br>Birthdate: " . $_POST["birthdate"] . "<br>Gender: " . $_POST["gender"] . "<br>Access Level: Faculty <br>College: " . $_POST["college"]; //email message
     }
     elseif ($level == "3") {
-      $mail->Body    = "Name: " . $_POST["name"] . "<br>Email: " . $_POST["email"] . "<br>Birthdate: " . $_POST["birthdate"] . "<br>Access Level: Student <br>College: " . $_POST["college"]; //email message
+      $mail->Body    = "Name: " . $name . "<br>Email: " . $_POST["email"] . "<br>Birthdate: " . $_POST["birthdate"] . "<br>Gender: " . $_POST["gender"] . "<br>Access Level: Student <br>College: " . $_POST["college"]; //email message
     }
     else {
-      $mail->Body    = "Name: " . $_POST["name"] . "<br>Email: " . $_POST["email"] . "<br>Birthdate: " . $_POST["birthdate"] . "<br>Access Level: IDO"; //email message
+      $mail->Body    = "Name: " . $name . "<br>Email: " . $_POST["email"] . "<br>Birthdate: " . $_POST["birthdate"] . "<br>Gender: " . $_POST["gender"] . "<br>Access Level: IDO"; //email message
     }
 
     // Success sent message alert

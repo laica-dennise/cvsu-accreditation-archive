@@ -18,7 +18,6 @@
     body {
       font-weight: 300;
       font-size: 12px;
-      line-height: 30px;
       color: #272727;
       background: linear-gradient(rgba(60, 60, 60), rgba(150, 150, 150));
       font-family: "Roboto", arial, sans-serif;
@@ -29,15 +28,16 @@
       width: 100%;
       margin: 0 auto;
       position: relative;
+      margin-bottom: 270px;
     }
  
     #contact input {
       font: 400 12px/16px;
-      width: 100%;
       border: 1px solid #CCC;
       background: #FFF;
       margin: 10 5px;
       padding: 10px;
+      margin-right: 10px;
     }
  
     h1 {
@@ -51,7 +51,10 @@
       padding: 25px;
       margin: 50px 0;
     }
- 
+
+    .info1 {
+      width: 320px;
+    }
  
     fieldset {
       border: medium none !important;
@@ -60,6 +63,11 @@
       -moz-box-sizing: border-box;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
+    }
+
+    .info {
+      float: left;
+      margin-right: 15px;
     }
 
     .request {
@@ -114,14 +122,22 @@
       <h1>Access Request</h1>
  
       <fieldset>
-        <input placeholder="Name" name="name" type="text" tabindex="1" autofocus required>
+        <input class="info1" placeholder="First Name" name="first_name" type="text" tabindex="1" autofocus required>
       </fieldset>
       <fieldset>
-        <input placeholder="Email Address" name="email" type="email" tabindex="2" required>
+        <input class="info1" placeholder="Last Name" name="last_name" type="text" tabindex="1" autofocus required>
       </fieldset>
       <fieldset>
+        <input class="info1" placeholder="Email Address" name="email" type="email" tabindex="2" required>
+      </fieldset>
+      <fieldset class="info">
         <legend class="birthdate">Birthdate</legend>
             <input name="birthdate" type="date" id="date" required>
+      </fieldset>
+      <fieldset>
+        <legend class="gender" style="margin-bottom:12px">Gender</legend>
+            <input name="gender" type="radio" id="male" value="Male"><label for="male">Male</label>
+            <input name="gender" type="radio" id="female" value="Female"><label for="female">Female</label>
       </fieldset>
       <fieldset>
         <legend class="user-level">Access as</legend>
