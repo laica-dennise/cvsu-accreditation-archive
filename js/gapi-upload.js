@@ -256,6 +256,8 @@ function removeFromDb(fileId) {
         success: function(response) {
             // Handle the response from delete.php
             console.log(response);
+			alert("The file has been deleted successfully.");
+			window.location.reload();
         },
         error: function(xhr, status, error) {
             // Handle errors
