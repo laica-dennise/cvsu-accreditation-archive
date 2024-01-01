@@ -72,13 +72,6 @@ $result = $mysqli->query($sql);
     <title>CvSU Accreditation Archive System</title>
     <link rel="stylesheet" type="text/css" href="styles/style5.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
-    <style>
-        .pagination {
-            margin-left: 650px;
-        }
-    </style>
-
 </head>
 <body>
 
@@ -91,7 +84,7 @@ $result = $mysqli->query($sql);
                 </div>
                 <div class="profile-boxx">
                     <div class="col-md-8">
-		            <div class="alert alert-info" style="margin-top:10px;"> User Activity </div>
+		            <div class="alert alert-info" style="margin-top:10px; width:350px"> User Activity </div>
             </div>
 
             <div id="nav-bar" class="nav-bar">
@@ -103,7 +96,7 @@ $result = $mysqli->query($sql);
               <img src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" class="menu-icon">
             </button>
             <div class="menu-content">
-            <a href="admin_dashboard.php">Profile</a>
+            <a href="profile_directory.php">Profile</a>
             <a href="uploaded_files.php">Uploaded Files</a>
             <?php if ($user_level == 0): ?>
                 <a href="user_list.php">User List</a>
@@ -144,7 +137,7 @@ $result = $mysqli->query($sql);
                             } elseif ($userLevel == 1) {
                                     echo 'IDO';
                             } elseif ($userLevel == 2) {
-                                    echo 'Faculty';
+                                    echo 'University Personnel';
                             } elseif ($userLevel == 3) {
                                     echo 'Student';
                             } else {

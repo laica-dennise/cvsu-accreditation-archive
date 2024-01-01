@@ -39,7 +39,7 @@ $file_owner = $first_name . " " . $last_name;
  
 // SQL query to select data from database
 $sql = " SELECT * FROM users WHERE email = '$email' && first_name = '$first_name' && last_name = '$last_name' ";
-$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && upload_date <= DATE_ADD(CURRENT_DATE, INTERVAL -5 YEAR ) ORDER BY id ASC ";
+$sql1 = " SELECT * FROM files WHERE upload_date <= DATE_ADD(CURRENT_DATE, INTERVAL -5 YEAR ) ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $result1 = $mysqli->query($sql1);
 $mysqli->close();
@@ -122,7 +122,7 @@ $mysqli->close();
                     <th>SIZE</th>
                     <th>DATE UPLOADED</th>
                     <th>File Directory</th>
-                    <th>File Area</th>
+                    <th>File Course</th>
                     <th>Tags</th>
                 </tr>
 
@@ -137,7 +137,7 @@ $mysqli->close();
                     <td><?php echo $rows['file_size'];?></td>
                     <td><?php echo $rows['upload_date'];?></td>
                     <td><?php echo $rows['file_directory'];?></td>
-                    <td><?php echo $rows['file_area'];?></td>
+                    <td><?php echo $rows['file_course'];?></td>
                     <td><?php echo $rows['file_tags']?></td>
                 </tr>
                 <?php

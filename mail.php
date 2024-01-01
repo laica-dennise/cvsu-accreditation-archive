@@ -51,7 +51,7 @@ if (isset($_POST["send"])) {
     echo
     " 
     <script> 
-     alert('Message was sent successfully!');
+     alert('Request sent successfully! Please wait while we redirect you back.');
      window.close();
     </script>
     ";

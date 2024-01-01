@@ -62,6 +62,9 @@ if ($result) {
 // SQL query to select data from database
 $sql = " SELECT * FROM users ORDER BY id ASC ";
 $result = $mysqli->query($sql);
+
+$sql2 = "SELECT * FROM access_request ORDER BY id ASC";
+$result2 = $mysqli->query($sql2);
 $mysqli->close();
 
 ?>
@@ -130,7 +133,7 @@ $mysqli->close();
                 </div>
                 <div class="profile-boxx">
                     <div class="col-md-8">
-		            <div class="alert alert-info" style="margin-top:10px;"> User List </div>
+		            <div class="alert alert-info" style="margin-top:10px;width:450px;"> User List </div>
                 <a href="#" id="register-box" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Add User </a>
             </div>
 
@@ -158,8 +161,9 @@ $mysqli->close();
             <input type="text" id="searchInput" placeholder="Search" size="50" oninput="search()">
       </div>
 
+      <div id="user-list">
       <section>
-    <table class="file-query table table-bordered table-hover table-striped">
+      <table class="file-query table table-bordered table-hover table-striped">
         <thead>
             <tr>
                 <th class="text-center">ID</th>
@@ -208,9 +212,63 @@ $mysqli->close();
             <?php
             }
             ?>
-        </tbody>
-    </table>
-</section>
+          </tbody>
+        </table>
+      </section>
+      </div>
+      
+      <div id="require-access">
+      <div class="alert alert-info" style="margin-top:10px; width:450px; margin-left: 15px; background: #f5dfc1;"> Requires Approval </div>
+      <section>
+      <table class="file-query table table-bordered table-hover table-striped">
+        <thead>
+            <tr>
+                <th class="text-center">ID</th>
+                <th class="text-center">FIRST NAME</th>
+                <th class="text-center">LAST NAME</th>
+                <th class="text-center">GENDER</th>
+                <th class="text-center">BIRTHDATE</th>
+                <th class="text-center">EMAIL</th>
+                <th class="text-center">USER LEVEL</th>
+                <th class="text-center">COLLEGE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            while ($rows = $result2->fetch_assoc()) {
+            ?>
+                <tr class="results">
+                    <td class="text-center"><?php echo $rows['id']; ?></td>
+                    <td class="text-center"><?php echo $rows['first_name']; ?></td>
+                    <td class="text-center"><?php echo $rows['last_name']; ?></td>
+                    <td class="text-center"><?php echo $rows['gender']; ?></td>
+                    <td class="text-center"><?php echo $rows['birthdate']; ?></td>
+                    <td class="text-center"><?php echo $rows['email']; ?></td>
+                    <td class="text-center">
+                        <?php
+                            $userLevel = $rows['user_level'];
+                            if ($userLevel == 0) {
+                                    echo 'Admin';
+                            } elseif ($userLevel == 1) {
+                                    echo 'IDO';
+                            } elseif ($userLevel == 2) {
+                                    echo 'Faculty';
+                            } elseif ($userLevel == 3) {
+                                    echo 'Student';
+                            } else {
+                                    echo 'Unknown Role'; 
+                            }
+                         ?>
+                    </td>
+                    <td class="text-center"><?php echo $rows['college']; ?></td>
+                </tr>
+            <?php
+            }
+            ?>
+          </tbody>
+       </table>
+      </section>
+      </div>
     </div>
     </div>
     </div>
@@ -308,7 +366,7 @@ $mysqli->close();
           <h4 class="modal-title"> System </h4>
         </div>
         <div class="modal-body">
-          <p> Are you sure you want to Sign Out? </p>
+          <p> Are you sure you want to sign out? </p>
         </div>
         <div class="modal-footer">
           <a href="./logout.php" class="btn btn-danger" >Sign out</a>

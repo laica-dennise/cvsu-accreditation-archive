@@ -36,6 +36,23 @@ $email = $user_info['email'];
 $first_name = $user_info['givenName'];
 $last_name = $user_info['familyName'];
 $file_owner = $first_name . " " . $last_name;
+
+/// Function to get user level
+function getUserLevel() {
+    global $user_info, $mysqli;
+  
+    // Assuming your users table has a 'user_level' column
+    $email = $user_info['email'];
+    $result = $mysqli->query("SELECT user_level FROM users WHERE email = '$email'");
+  
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['user_level'];
+    } else {
+        // Default user level if not found
+        return 0;
+    }
+  }
  
 // SQL query to select data from database
 $sql = " SELECT * FROM users WHERE email = '$email' && first_name = '$first_name' && last_name = '$last_name' ";
@@ -83,7 +100,7 @@ $mysqli->close();
 
       <div id="main" class="main">
         <div class="profile-box">
-          <div id="sidenav" class="sidenav">
+          <div id="sidenav" class="sidenav" hidden>
             <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
           </div>
           <div class="profile-boxx">
@@ -98,7 +115,6 @@ $mysqli->close();
               <li><strong>Email:</strong> <?=$user_info['email'];?></li>
               <li><strong>Gender:</strong> <?php echo $rows['gender'];?></li>
               <li><strong>Birthday:</strong> <?php echo $rows['birthdate'];?></li>
-              <li><strong>College:</strong> <?php echo $rows['college'];?></li>
               <li><strong>User Level:</strong> Faculty</li>
             </ul>
           <?php
@@ -123,7 +139,7 @@ $mysqli->close();
                     <th>SIZE</th>
                     <th>DATE UPLOADED</th>
                     <th>File Directory</th>
-                    <th>File Area</th>
+                    <th>File Course</th>
                     <th>Tags</th>
                 </tr>
 
@@ -138,7 +154,7 @@ $mysqli->close();
                     <td><?php echo $rows['file_size'];?></td>
                     <td><?php echo $rows['upload_date'];?></td>
                     <td><?php echo $rows['file_directory'];?></td>
-                    <td><?php echo $rows['file_area'];?></td>
+                    <td><?php echo $rows['file_course'];?></td>
                     <td><?php echo $rows['file_tags']?></td>
                 </tr>
                 <?php
@@ -161,6 +177,7 @@ $mysqli->close();
           <div class="menu-content">
             <a href="admin_dashboard.php">Profile</a>
             <a href="uploaded_files.php">Uploaded Files</a>
+            <a href="college_directory.php">College Directory</a>
             <a href="#" data-toggle="modal" data-target="#logout">Sign out</a>
           </div>
         </div>
