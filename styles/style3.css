@@ -133,15 +133,15 @@ h1 {
 }
 
 .drey {
-    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/drey.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/drey.png);
 }
 
 .will {
-    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/will.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/will.png);
 }
 
 .joel {
-    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/joel.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url(/cvsu_accrsystem/images/joel.png);
 }
 
 .card:hover {
@@ -153,15 +153,15 @@ h1 {
 }
 
 .drey:hover {
-    background-image: url(/cvsu_accrsystem/images/drey.jpg);
+    background-image: url(/cvsu_accrsystem/images/drey.png);
 }
 
 .will:hover {
-    background-image: url(/cvsu_accrsystem/images/will.jpg);
+    background-image: url(/cvsu_accrsystem/images/will.png);
 }
 
 .joel:hover {
-    background-image: url(/cvsu_accrsystem/images/joel.jpg);
+    background-image: url(/cvsu_accrsystem/images/joel.png);
 }
 
 h5 {
