@@ -15,6 +15,23 @@ if($client->isAccessTokenExpired()){
 $google_oauth = new Google_Service_Oauth2($client);
 $user_info = $google_oauth->userinfo->get();
 
+/// Function to get user level
+function getUserLevel() {
+  global $user_info, $mysqli;
+
+  // Assuming your users table has a 'user_level' column
+  $email = $user_info['email'];
+  $result = $mysqli->query("SELECT user_level FROM users WHERE email = '$email'");
+
+  if ($result && $result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      return $row['user_level'];
+  } else {
+      // Default user level if not found
+      return 0;
+  }
+}
+
 $user = 'root';
 $password = '';
  
@@ -36,27 +53,10 @@ $email = $user_info['email'];
 $first_name = $user_info['givenName'];
 $last_name = $user_info['familyName'];
 $file_owner = $first_name . " " . $last_name;
-
-/// Function to get user level
-function getUserLevel() {
-    global $user_info, $mysqli;
-  
-    // Assuming your users table has a 'user_level' column
-    $email = $user_info['email'];
-    $result = $mysqli->query("SELECT user_level FROM users WHERE email = '$email'");
-  
-    if ($result && $result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        return $row['user_level'];
-    } else {
-        // Default user level if not found
-        return 0;
-    }
-  }
  
 // SQL query to select data from database
 $sql = " SELECT * FROM users WHERE email = '$email' && first_name = '$first_name' && last_name = '$last_name' ";
-$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && upload_date <= DATE_ADD(CURRENT_DATE, INTERVAL -5 YEAR ) ORDER BY id ASC ";
+$sql1 = " SELECT * FROM files WHERE upload_date <= DATE_ADD(CURRENT_DATE, INTERVAL -5 YEAR ) ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $result1 = $mysqli->query($sql1);
 $mysqli->close();
@@ -100,7 +100,7 @@ $mysqli->close();
 
       <div id="main" class="main">
         <div class="profile-box">
-          <div id="sidenav" class="sidenav" hidden>
+          <div id="sidenav" class="sidenav">
             <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
           </div>
           <div class="profile-boxx">
@@ -113,7 +113,7 @@ $mysqli->close();
               <li class="profile-pic"><img class="pic" src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" width="150" height="150"></li>
               <li><strong>Full Name:</strong> <?=$user_info['givenName'];?> <?=$user_info['familyName'];?></li>
               <li><strong>Email:</strong> <?=$user_info['email'];?></li>
-              <li><strong>User Level:</strong> Student</li>
+              <li><strong>User Level:</strong> Administrator</li>
             </ul>
           <?php
             }
@@ -122,7 +122,7 @@ $mysqli->close();
         </div>
       </div>
 
-      <div class="outdated-part" hidden>
+      <div class="outdated-part">
         <div class="outdated-box">
           <div class="outdated-boxx">
 		      <div class="alert alert-info" style="margin-top:10px;width: 300px;margin-left:10px;background:linear-gradient(rgba(255, 0, 0, 0.7), rgba(255, 0, 0, 0.7));color: #fff;cursor:default;">
@@ -135,6 +135,7 @@ $mysqli->close();
                     <th>NAME</th>
                     <th>TYPE</th>
                     <th>SIZE</th>
+                    <th>OWNER</th>
                     <th>DATE UPLOADED</th>
                     <th>File Directory</th>
                     <th>File Course</th>
@@ -150,6 +151,7 @@ $mysqli->close();
                     <td><?php echo $rows['file_name'];?></td>
                     <td><?php echo $rows['file_type'];?></td>
                     <td><?php echo $rows['file_size'];?></td>
+                    <td><?php echo $rows['file_owner'];?></td>
                     <td><?php echo $rows['upload_date'];?></td>
                     <td><?php echo $rows['file_directory'];?></td>
                     <td><?php echo $rows['file_course'];?></td>
@@ -173,8 +175,11 @@ $mysqli->close();
             <img src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" class="menu-icon">
           </button>
           <div class="menu-content">
-            <a href="profile.php">Profile</a>
-            <a href="college_directory.php">College Directory</a>
+            <a href="admin_dashboard.php">Profile</a>
+            <a href="uploaded_files.php">Uploaded Files</a>
+            <a href="outdated_files.php">Outdated Files</a>
+            <a href="user_list.php">User List</a>
+            <a href="logs.php">Activity Logs</a>
             <a href="#" data-toggle="modal" data-target="#logout">Sign Out</a>
           </div>
         </div>

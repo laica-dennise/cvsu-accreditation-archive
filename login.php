@@ -1,61 +1,15 @@
 <?php
 require('./config.php');
-# the createAuthUrl() method generates the login URL.
+require('./login_query.php');
+
 $login_url = $client->createAuthUrl();
-/* 
- * After obtaining permission from the user,
- * Google will redirect to the login.php with the "code" query parameter.
-*/
-if (isset($_GET['code'])):
 
-  session_start();
-  $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
-  if(isset($token['error'])){
-    header('Location: login.php');
-    exit;
-  }
-  $_SESSION['token'] = $token;
-
-  /* -- Inserting the user data into the database -- */
-
-  # Fetching the user data from the google account
-  $client->setAccessToken($token);
-  $google_oauth = new Google_Service_Oauth2($client);
-  $user_info = $google_oauth->userinfo->get();
-
-  $google_id = trim($user_info['id']);
-  $f_name = trim($user_info['given_name']);
-  $l_name = trim($user_info['family_name']);
-  $email = trim($user_info['email']);
-  $gender = trim($user_info['gender']);
-  $local = trim($user_info['local']);
-  $picture = trim($user_info['picture']);
-
-  # Database connection
-  require('./dbConfig.php');
-
-  # Checking whether the email already exists in our database.
-  $check_email = $db_connection->prepare("SELECT `email` FROM `users` WHERE `email`=?");
-  $check_email->bind_param("s", $email);
-  $check_email->execute();
-  $check_email->store_result();
-
-  if($check_email->num_rows === 0){
-    # Inserting the new user into the database
-    $query_template = "INSERT INTO `users` (`oauth_uid`, `first_name`, `last_name`,`email`,`profile_pic`,`gender`,`local`) VALUES (?,?,?,?,?,?,?)";
-    $insert_stmt = $db_connection->prepare($query_template);
-    $insert_stmt->bind_param("sssssss", $google_id, $f_name, $l_name, $email, $gender, $local, $picture);
-    if(!$insert_stmt->execute()){
-      echo "Failed to insert user.";
-      exit;
-    }
-  }
-
-  header('Location: profile.php');
-  exit;
-
-endif;
+if (isset($_GET['code'])) {
+    $email = handleAuthorizationCode($client);
+    performLogin($client, $db_connection, $email);
+}
 ?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -80,7 +34,14 @@ endif;
                         <li><a href="login.php">LOGIN</a></li>
                     </ul>
                 </nav>
-                <img src="images/menu.png" class="menu-icon">
+                <div class="menu">
+                    <button class="menu-button">
+                        <img src="images/menu.png" class="menu-icon">
+                    </button>
+                    <div class="menu-content">
+                        <a rel="noopener" target="_blank" href="register.php">Register</a>
+                    </div>
+                </div>
             </div>
 
             <div class="sign-in-box">

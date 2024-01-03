@@ -100,7 +100,7 @@ $mysqli->close();
 
       <div id="main" class="main">
         <div class="profile-box">
-          <div id="sidenav" class="sidenav" hidden>
+          <div id="sidenav" class="sidenav">
             <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
           </div>
           <div class="profile-boxx">
@@ -113,7 +113,7 @@ $mysqli->close();
               <li class="profile-pic"><img class="pic" src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" width="150" height="150"></li>
               <li><strong>Full Name:</strong> <?=$user_info['givenName'];?> <?=$user_info['familyName'];?></li>
               <li><strong>Email:</strong> <?=$user_info['email'];?></li>
-              <li><strong>User Level:</strong> Student</li>
+              <li><strong>User Level:</strong> IDO</li>
             </ul>
           <?php
             }
@@ -122,7 +122,7 @@ $mysqli->close();
         </div>
       </div>
 
-      <div class="outdated-part" hidden>
+      <div class="outdated-part">
         <div class="outdated-box">
           <div class="outdated-boxx">
 		      <div class="alert alert-info" style="margin-top:10px;width: 300px;margin-left:10px;background:linear-gradient(rgba(255, 0, 0, 0.7), rgba(255, 0, 0, 0.7));color: #fff;cursor:default;">
@@ -173,8 +173,9 @@ $mysqli->close();
             <img src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" class="menu-icon">
           </button>
           <div class="menu-content">
-            <a href="profile.php">Profile</a>
-            <a href="college_directory.php">College Directory</a>
+            <a href="ido_dashboard.php">Profile</a>
+            <a href="uploaded_files.php">Uploaded Files</a>
+            <a href="outdated_files.php">Outdated Files</a>
             <a href="#" data-toggle="modal" data-target="#logout">Sign Out</a>
           </div>
         </div>
