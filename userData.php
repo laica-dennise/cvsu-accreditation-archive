@@ -7,7 +7,6 @@ $userData = json_decode($_POST['userData']);
 
 if(!empty($userData)){
     // The user's profile info
-    $oauth_provider = $_POST['oauth_provider'];
     $oauth_uid  = !empty($userData->id)?$userData->id:'';
     $first_name = !empty($userData->given_name)?$userData->given_name:'';
     $last_name  = !empty($userData->family_name)?$userData->family_name:'';
@@ -18,12 +17,12 @@ if(!empty($userData)){
     $link       = !empty($userData->link)?$userData->link:'';
     
     // Check whether the user data already exist in the database
-    $query = "SELECT * FROM users WHERE oauth_provider = '".$oauth_provider."' AND oauth_uid = '".$oauth_uid."'";
+    $query = "SELECT * FROM users WHERE email = '".$email."'";
     $result = $db->query($query);
     
     if($result->num_rows > 0){ 
         // Update user data if already exists
-        $query = "UPDATE users SET first_name = '".$first_name."', last_name = '".$last_name."', email = '".$email."', gender = '".$gender."', locale = '".$locale."', picture = '".$picture."', link = '".$link."', modified = NOW() WHERE oauth_provider = '".$oauth_provider."' AND oauth_uid = '".$oauth_uid."'";
+        $query = "UPDATE users SET first_name = '".$first_name."', last_name = '".$last_name."', email = '".$email."', gender = '".$gender."', locale = '".$locale."', picture = '".$picture."', link = '".$link."', oauth_uid = '".$ouath_uid."' modified = NOW() WHERE email = '".$email."'";
         $update = $db->query($query);
     }else{
         // Insert user data

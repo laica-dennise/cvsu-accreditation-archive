@@ -15,9 +15,6 @@ if ($client->isAccessTokenExpired()) {
 $google_oauth = new Google_Service_Oauth2($client);
 $user_info = $google_oauth->userinfo->get();
 
-$email = $user_info['email'];
-$owner_email = $user_info['email'];
-
 $user = 'root';
 $password = '';
 
@@ -34,8 +31,12 @@ if ($mysqli->connect_error) {
         $mysqli->connect_error);
 }
 
+$first_name = $user_info['given_name'];
+$last_name = $user_info['family_name'];
+$file_owner = $first_name . " " . $last_name;
+$owner_email = $user_info['email'];
 
-// Function to get user level
+/// Function to get user level
 function getUserLevel() {
   global $user_info, $mysqli;
 
@@ -52,16 +53,32 @@ function getUserLevel() {
   }
 }
 
+/// Function to get college
+function getUserCollege() {
+  global $user_info, $mysqli;
+
+  // Assuming your users table has a 'college' column
+  $email = $user_info['email'];
+  $result = $mysqli->query("SELECT college FROM users WHERE email = '$email'");
+
+  if ($result && $result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      return $row['college'];
+  } else {
+      // Default college if not found
+      return 0;
+  }
+}
 
 // Pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $limit = 10; // Number of rows per page set to 10
 $offset = ($page - 1) * $limit; // Corrected offset calculation
-$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_directory = 'CAFENR' || file_directory = 'General'")->fetch_assoc()['total'];
+$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files")->fetch_assoc()['total'];
 $totalPages = ceil($totalRecords / $limit);
 
 // SQL query to select data from database with pagination
-$sql = "SELECT * FROM files WHERE file_directory = 'CAFENR' || file_directory = 'General' ORDER BY id ASC LIMIT $limit OFFSET $offset";
+$sql = " SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && upload_date >= NOW() - INTERVAL 5 YEAR ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 ?>
 <!DOCTYPE html>
@@ -75,7 +92,7 @@ $result = $mysqli->query($sql);
 
     <style>
         .pagination {
-          margin-left: 15px;
+            margin-left: 15px;
         }
     </style>
 </head>
@@ -85,13 +102,13 @@ $result = $mysqli->query($sql);
     <div id="main" class="main">
         <div class="box">
             <div class="profile-box">
-            <div id="sidenav" style="<?php echo (getUserLevel() == 2) ? 'display:none;' : ''; echo (getUserLevel() == 3) ? 'display:none;' : '';?>">
+                <div id="sidenav" style="<?php echo (getUserLevel() == 2) ? 'display:none;' : ''; ?>;<?php echo (getUserLevel() == 3) ? 'display:none;' : ''; ?>">
                     <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
                 </div>
                 <div class="profile-boxx">
                     <div class="col-md-8">
-		            <div class="alert alert-info" style="margin-top:10px;width:450px"> CAFENR</div>
-                <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
+		            <div class="alert alert-info" style="margin-top:10px;width:350px"> My Uploaded Files </div>
+                <a href="#" id="authorizationButton" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
                 <input id="user-email" value="<?php echo $owner_email?>" hidden></input>
             </div>
             
@@ -106,14 +123,15 @@ $result = $mysqli->query($sql);
             </button>
             <div class="content">
               <div class="menu-content">
-                <a href="admin_dashboard.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">Profile</a>
+              <a href="admin_dashboard.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">Profile</a>
                 <a href="ido_dashboard.php" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : ''; ?>">Profile</a>
                 <a href="faculty_dashboard.php" style="<?php echo (getUserLevel() != 2) ? 'display:none;' : ''; ?>">Profile</a>
                 <a href="profile.php" style="<?php echo (getUserLevel() != 3) ? 'display:none;' : ''; ?>">Profile</a>
-                <a href="uploaded_files.php" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : ''; ?>">Uploaded Files</a>
                 <a href="outdated_files.php" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : ''; ?>">Outdated Files</a>
                 <a href="user_list.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">User List</a>
                 <a href="logs.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">Activity Logs</a>
+                <a href="college_directory.php" style="<?php echo (getUserLevel() != 2) ? 'display:none;' : ''; ?>">College Directory</a>
+                <a href="college_directory.php" style="<?php echo (getUserLevel() != 3) ? 'display:none;' : ''; ?>">College Directory</a>
                 <a href="#" data-toggle="modal" data-target="#logout">Sign Out</a>
               </div>
             </div>
@@ -144,15 +162,10 @@ $result = $mysqli->query($sql);
           while ($rows = $result->fetch_assoc()) {
             $id = $rows['id'];
             $fileId = $rows['file_id'];
-            $dateUploaded = strtotime($rows["upload_date"]);
-            $currentDate = strtotime(date("Y-m-d"));
-            $isOlderThan5Years = ($currentDate - $dateUploaded) > (5 * 365 * 24 * 60 * 60);
-
-            $rowClass = $isOlderThan5Years ? 'color:red' : '';
           ?>
-            <tr class="results" style="<?php echo $rowClass;?>">
+            <tr class="results">
               <td class="text-center"><?php echo $rows['id']; ?></td>
-              <td class="text-center"><?php echo substr($rows['file_name'], 0, 50); ?></td>
+              <td class="text-center"><?php echo substr($rows['file_name'], 0, 30); ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
               <td class="text-center"><?php echo $rows['file_directory'];?></td>
@@ -176,20 +189,14 @@ $result = $mysqli->query($sql);
                 ?>
               </td>
               <td>
-              <button class="btn btn-primary btn-sm" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span> View</button>
+                <button class="btn btn-primary btn-sm" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span> View</button>
                 <button class="btn btn-success btn-sm" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span> Download</button>
-                <?php
-                  if ($rows['owner_email'] == $email) {
-                  ?>
-                  <button class="btn btn-danger btn-delete" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span> Remove</button>
-                  <?php
-                  }
-                ?>
-                    </td>
-                </tr>
-            <?php
-            }
-            ?>
+                <button class="btn btn-danger btn-delete" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+              </td>
+            </tr>
+          <?php
+          }
+          ?>
         </tbody>
     </table>
      <!-- Pagination -->
@@ -242,45 +249,83 @@ $result = $mysqli->query($sql);
         </div>
         <div class="modal-body">
         <form action="upload.php" method="POST" enctype="multipart/form-data" id="upload" onsubmit="return false;">
-        <input type="file" name="file" id="fileInput" accept=".pdf, .docx, .png, .jpg, .jpeg">
-        <label for="directories">File Directory:</label>
-          <div class="fixed-dropdown">
-              <select name="directories" id="directories" onchange="updateCourseOptions()">
-                <option value=""></option>
-                <option value="CAFENR">CAFENR</option>
+          <input type="file" name="file" id="fileInput" accept=".pdf, .docx, .png, .jpg, .jpeg">
+          <br>
+          <label for="directories">File Directory:</label>
+            <div class="fixed-dropdown">
+                <select name="directories" id="directories" onchange="updateCourseOptions();showCourse();" required>
+                  <option value=""></option>
+                  <option value="General">General</option>
+                  <option value="CAFENR" style="<?php echo (getUserCollege() != 'CAFENR') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CAFENR</option>
+                    <option value="CAFENR" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CAFENR</option>
+                      <option value="CAFENR" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CAFENR</option>
+                  <option value="CAS" style="<?php echo (getUserCollege() != 'CAS') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CAS</option>
+                    <option value="CAS" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CAS</option>
+                      <option value="CAS" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CAS</option>
+                  <option value="CCJ" style="<?php echo (getUserCollege() != 'CCJ') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CCJ</option>
+                    <option value="CCJ" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CCJ</option>
+                      <option value="CCJ" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CCJ</option>
+                  <option value="CED" style="<?php echo (getUserCollege() != 'CED') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CED</option>
+                    <option value="CED" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CED</option>
+                      <option value="CED" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CED</option>
+                  <option value="CEMDS" style="<?php echo (getUserCollege() != 'CEMDS') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CEMDS</option>
+                    <option value="CEMDS" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CEMDS</option>
+                      <option value="CEMDS" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CEMDS</option>
+                  <option value="CEIT" style="<?php echo (getUserCollege() != 'CEIT') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CEIT</option>
+                    <option value="CEIT" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CEIT</option>
+                      <option value="CEIT" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CEIT</option>
+                  <option value="CON" style="<?php echo (getUserCollege() != 'CON') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CON</option>
+                    <option value="CON" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CON</option>
+                      <option value="CON" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CON</option>
+                  <option value="CSPEAR" style="<?php echo (getUserCollege() != 'CSPEAR') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CSPEAR</option>
+                    <option value="CSPEAR" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CSPEAR</option>
+                      <option value="CSPEAR" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CSPEAR</option>
+                  <option value="CVMBS" style="<?php echo (getUserCollege() != 'CVMBS') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">CVMBS</option>
+                    <option value="CVMBS" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">CVMBS</option>
+                      <option value="CVMBS" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">CVMBS</option>
+                  <option value="College of Medicine" style="<?php echo (getUserCollege() != 'College of Medicine') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">College of Medicine</option>
+                    <option value="College of Medicine" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">College of Medicine</option>
+                      <option value="College of Medicine" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">College of Medicine</option>
+                  <option value="Graduate School and Open Learning College" style="<?php echo (getUserCollege() != 'CGraduate School and Open Learning College') ? 'display:none;' : ''; echo (getUserLevel() != 2) ? 'display:none;' : '';?>">Graduate School and Open Learning College</option>
+                    <option value="Graduate School and Open Learning College" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : '';?>">Graduate School and Open Learning College</option>
+                      <option value="Graduate School and Open Learning College" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">Graduate School and Open Learning College</option>
                 </select>
+              </div>
+
+          <br></br>
+          <div class="courses" id="courses">
+            <label for="course">Course :</label>
+            <div class="fixed-dropdown">
+              <select name="course" id="course">
+                <option value=""></option>
+              </select>
             </div>
+          </div>
 
+          <br>
+          <label for="area">File Area:</label>
+          <div class="fixed-dropdown">
+            <select name="area" id="area">
+              <option value=""></option>
+              <option value="Area 1">Vision, Mission, Goals and Objective</option>
+              <option value="Area 2">Faculty</option>
+              <option value="Area 3">Curricular</option>
+              <option value="Area 4">Support to Students</option>
+              <option value="Area 5">Research</option>
+              <option value="Area 6">Extension and Community Involvement</option>
+              <option value="Area 7">Library</option>
+              <option value="Area 8">Physical Plan and Facilities</option>
+              <option value="Area 9">Laboratories</option>
+              <option value="Area 10">Administration</option>
+            </select>
+          </div>  
 
-        <label for="course">Course :</label>
-        <div class="fixed-dropdown">
-          <select name="course" id="course">
-            <option value=""></option>
-          </select>
-        </div>
-
-        <br></br>
-        <label for="area">File Area:</label>
-        <div class="fixed-dropdown">
-          <select name="area" id="area">
-            <option value=""></option>
-            <option value="Area 1">Vision, Mission, Goals and Objective</option>
-            <option value="Area 2">Faculty</option>
-            <option value="Area 3">Curricular</option>
-            <option value="Area 4">Support to Students</option>
-            <option value="Area 5">Research</option>
-            <option value="Area 6">Extension and Community Involvement</option>
-            <option value="Area 7">Library</option>
-            <option value="Area 8">Physical Plan and Facilities</option>
-            <option value="Area 9">Laboratories</option>
-            <option value="Area 10">Administration</option>
-          </select>
-        </div>  
-        <input type="hidden" name="tags" id="hiddenTagsInput" value="">
-        <label for="tags">Tags (Press Enter to add a tag):</label>
-        <div id="tagsInputContainer" style="display: flex; flex-wrap: wrap; gap: 5px; padding: 5px; border: 1px solid #ccc; border-radius: 5px;"></div>
-        <input type="text" name="tagsInputVisible" id="tagsInput" class="form-control" placeholder="Enter tags..." onkeydown="handleTagInput(event)">
-            </form>
+          <br></br>
+          <input type="hidden" name="tags" id="hiddenTagsInput" value="">
+          <label for="tags">Tags (Press Enter to add a tag):</label>
+          <div id="tagsInputContainer" style="display: flex; flex-wrap: wrap; gap: 5px; padding: 5px; border: 1px solid #ccc; border-radius: 5px;"></div>
+          <input type="text" name="tagsInputVisible" id="tagsInput" class="form-control" placeholder="Enter tags..." onkeydown="handleTagInput(event)">
+        </form>
         </div>
         <div class="modal-footer">
         <a href="#" id="uploadButton" onclick="uploadFile();dbUpload();" type="submit" value="Upload File" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload </a>
@@ -304,7 +349,7 @@ $result = $mysqli->query($sql);
           <p> Are you sure you want to sign out? </p>
         </div>
         <div class="modal-footer">
-          <a href="./logout.php" class="btn btn-danger" >Sign out</a>
+          <a href="./logout.php" onclick="handleSignoutClick()" class="btn btn-danger" >Sign out</a>
           <button type="button" class="btn btn-success" data-dismiss="modal"> Close </button>
         </div>
       </div>
@@ -314,7 +359,7 @@ $result = $mysqli->query($sql);
 
     <!-- Modal Delete -->
 
-    <div class="modal fade" id="modal_remove" aria-hidden="true" role="dialog">
+<div class="modal fade" id="modal_remove" aria-hidden="true" role="dialog">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -379,6 +424,51 @@ $result = $mysqli->query($sql);
       alert("Copied the link: " + viewLink);
     }
 
+    function showCourse() {
+      var directories = document.getElementById("directories").value;
+
+      if (directories === "General") {
+        document.getElementById("courses").style.display = "none";
+      }
+      else if (directories === "CAFENR") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CAS") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CCJ") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CED") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CEIT") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CEMDS") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CON") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CSPEAR") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "CVMBS") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "College of Medicine") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else if (directories === "Graduate School and Open Learning College") {
+        document.getElementById("courses").style.display = "block";
+      }
+      else {
+        document.getElementById("courses").style.display = "none";
+      }
+    }
+
+    // JavaScript function to update "Course" options based on selected "College"
     function updateCourseOptions() {
       var selectedCollege = document.getElementById('directories').value;
       var courseDropdown = document.getElementById('course');
@@ -400,16 +490,16 @@ $result = $mysqli->query($sql);
     // Function to get course options based on selected college
     function getCourseOptions(college) {
       var courseOptions = {
-          'CAFENR': ['Bachelor of Science in Agriculture', 'Bachelor of Science in Environmental Science', 'Bachelor of Science in Food Technology', 'Bachelor of Science in Land Use Design and Management', 'Bachelor in Agricultural Entrepreneurship', 'Certificate in Agricultural Science'],
-          'CAS': ['Bachelor of Science in Biology', 'Bachelor of Arts in Journalism', 'Bachelor of Arts in English', 'Bachelor of Science in Psychology', 'Bachelor of Arts in Political Science', 'Bachelor of Science in Social Work', 'Bachelor of Science in Applied Mathematics (Major in Statistics)'], 
-          'CCJ': ['Bachelor of Science in Criminology', 'Bachelor of Science in Industrial Security Administration'], 
-          'CED': ['Bachelor of Secondary Education', 'Bachelor of Elementary Education', 'Bachelor of Hotel and Restaurant Management', 'Bachelor of Tourism Management'], 
-          'CEMDS': ['Bachelor of Science in Office Administration', 'Bachelor of Science in Accountancy', 'Bachelor of Science in Business Administration', 'Bachelor of Science in Economics', 'Bachelor of Science in Development Management', 'Bachelor of Science in International Studies'], 
-          'CEIT': ['Bachelor of Science in Agricultural and Biosystems Engineering', 'Bachelor of Science in Architecture', 'Bachelor of Science in Civil Engineering', 'Bachelor of Science in Computer Engineering', 'Bachelor of Science in Computer Science', 'Bachelor of Science in Electrical Engineering', 'Bachelor of Science in Electronics Engineering', 'Bachelor of Science in Industrial Engineering', 'Bachelor of Science in Industrial Technology', 'Bachelor of Science in Information Technology', 'Bachelor of Science in Office Administration'], 
-          'CON': ['Bachelor of Science in Nursing', 'Bachelor of Science in Medical Technology', 'Bachelor of Science in Midwifery'], 
-          'CSPEAR': ['Bachelor of Physical Education', 'Bachelor in Sports and Recreational Management'], 
-          'CVMBS': ['Doctor of Veterinary Medicine', 'Bachelor of Science in Veterinary Technology', 'Bachelor of Science in Animal Health and Management', 'Bachelor of Science in Biomedical Science'], 
-          'Graduate School and Open Learning College': ['Doctor of Philosophy in Agricultural', 'Doctor of Philosophy in Education', 'Doctor of Philosophy in Management', 'Master of Arts in Education', 'Master of Agriculture', 'Master of Engineering', 'Master in Information Technology', 'Master of Management', 'Master of Business Administration', 'Master of Professional Studies', 'Master of Science in Agriculture', 'Master of Science in Biology', 'Master of Science in Food Science'], 
+        'CAFENR': ['Bachelor of Science in Agriculture', 'Bachelor of Science in Environmental Science', 'Bachelor of Science in Food Technology', 'Bachelor of Science in Land Use Design and Management', 'Bachelor in Agricultural Entrepreneurship', 'Certificate in Agricultural Science'],
+        'CAS': ['Bachelor of Science in Biology', 'Bachelor of Arts in Journalism', 'Bachelor of Arts in English', 'Bachelor of Science in Psychology', 'Bachelor of Arts in Political Science', 'Bachelor of Science in Social Work', 'Bachelor of Science in Applied Mathematics (Major in Statistics)'], 
+        'CCJ': ['Bachelor of Science in Criminology', 'Bachelor of Science in Industrial Security Administration'], 
+        'CED': ['Bachelor of Secondary Education', 'Bachelor of Elementary Education', 'Bachelor of Hotel and Restaurant Management', 'Bachelor of Tourism Management'], 
+        'CEMDS': ['Bachelor of Science in Office Administration', 'Bachelor of Science in Accountancy', 'Bachelor of Science in Business Administration', 'Bachelor of Science in Economics', 'Bachelor of Science in Development Management', 'Bachelor of Science in International Studies'], 
+        'CEIT': ['Bachelor of Science in Agricultural and Biosystems Engineering', 'Bachelor of Science in Architecture', 'Bachelor of Science in Civil Engineering', 'Bachelor of Science in Computer Engineering', 'Bachelor of Science in Computer Science', 'Bachelor of Science in Electrical Engineering', 'Bachelor of Science in Electronics Engineering', 'Bachelor of Science in Industrial Engineering', 'Bachelor of Science in Industrial Technology', 'Bachelor of Science in Information Technology', 'Bachelor of Science in Office Administration'], 
+        'CON': ['Bachelor of Science in Nursing', 'Bachelor of Science in Medical Technology', 'Bachelor of Science in Midwifery'], 
+        'CSPEAR': ['Bachelor of Physical Education', 'Bachelor in Sports and Recreational Management'], 
+        'CVMBS': ['Doctor of Veterinary Medicine', 'Bachelor of Science in Veterinary Technology', 'Bachelor of Science in Animal Health and Management', 'Bachelor of Science in Biomedical Science'], 
+        'Graduate School and Open Learning College': ['Doctor of Philosophy in Agricultural', 'Doctor of Philosophy in Education', 'Doctor of Philosophy in Management', 'Master of Arts in Education', 'Master of Agriculture', 'Master of Engineering', 'Master in Information Technology', 'Master of Management', 'Master of Business Administration', 'Master of Professional Studies', 'Master of Science in Agriculture', 'Master of Science in Biology', 'Master of Science in Food Science'], 
         // Add options for other colleges
       };
 
@@ -438,9 +528,9 @@ $result = $mysqli->query($sql);
 
     // Function to remove tag
     function removeTag(tagElement) {
-      tagElement.parentNode.remove();
-      // Update the hidden input field after removing a tag
-      updateHiddenTagsInput();
+        tagElement.parentNode.remove();
+        // Update the hidden input field after removing a tag
+        updateHiddenTagsInput();
     }
 
     // Function to update the hidden input field with the current tags
@@ -451,14 +541,14 @@ $result = $mysqli->query($sql);
 
       // Get all tags from the visible tag elements
       tagsInputContainer.querySelectorAll('span').forEach(function (tagElement) {
-        tags.push(tagElement.innerText.trim());
+          tags.push(tagElement.innerText.trim());
       });
 
       // Update the hidden input field value
       hiddenTagsInput.value = tags.join(',');
     }
 
-      // Handle Enter key press in tags input
+   // Handle Enter key press in tags input
     function handleTagInput(event) {
       if (event.key === "Enter") {
         event.preventDefault(); // Prevent the default behavior (form submission)
@@ -549,14 +639,15 @@ $result = $mysqli->query($sql);
 
         // Attach a click event listener to the button inside the modal
       buttonInsideModal.addEventListener('click', function() {
-        // Use the data-id inside the modal as needed
-        deleteFile(userEmail,dataId);
-        setTimeout(function() {
+         // Use the data-id inside the modal as needed
+         deleteFile(dataId);
+         setTimeout(function() {
           removeFromDb(dataId);
-        }, 3000);
+         }, 3000);
+         console.log('The file ID of the deleted file: ', dataId);
       });
       }
-      
+
       function deleteFromDrive() {
         document.getElementById('removeFromDrive').click();
       }

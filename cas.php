@@ -57,11 +57,11 @@ function getUserLevel() {
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $limit = 10; // Number of rows per page set to 10
 $offset = ($page - 1) * $limit; // Corrected offset calculation
-$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_directory = 'CAFENR' || file_directory = 'General'")->fetch_assoc()['total'];
+$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_directory = 'CAS' || file_directory = 'General'")->fetch_assoc()['total'];
 $totalPages = ceil($totalRecords / $limit);
 
 // SQL query to select data from database with pagination
-$sql = "SELECT * FROM files WHERE file_directory = 'CAFENR' || file_directory = 'General' ORDER BY id ASC LIMIT $limit OFFSET $offset";
+$sql = "SELECT * FROM files WHERE file_directory = 'CAS' || file_directory = 'General' ORDER BY id ASC LIMIT $limit OFFSET $offset";
 $result = $mysqli->query($sql);
 ?>
 <!DOCTYPE html>
@@ -90,7 +90,7 @@ $result = $mysqli->query($sql);
                 </div>
                 <div class="profile-boxx">
                     <div class="col-md-8">
-		            <div class="alert alert-info" style="margin-top:10px;width:450px"> CAFENR</div>
+		            <div class="alert alert-info" style="margin-top:10px;width:450px"> CAS</div>
                 <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
                 <input id="user-email" value="<?php echo $owner_email?>" hidden></input>
             </div>
@@ -247,7 +247,7 @@ $result = $mysqli->query($sql);
           <div class="fixed-dropdown">
               <select name="directories" id="directories" onchange="updateCourseOptions()">
                 <option value=""></option>
-                <option value="CAFENR">CAFENR</option>
+                <option value="CAS">CAS</option>
                 </select>
             </div>
 
@@ -550,7 +550,7 @@ $result = $mysqli->query($sql);
         // Attach a click event listener to the button inside the modal
       buttonInsideModal.addEventListener('click', function() {
         // Use the data-id inside the modal as needed
-        deleteFile(userEmail,dataId);
+        deleteFile(dataId);
         setTimeout(function() {
           removeFromDb(dataId);
         }, 3000);

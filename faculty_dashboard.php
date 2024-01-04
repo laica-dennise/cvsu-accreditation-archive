@@ -36,6 +36,7 @@ $email = $user_info['email'];
 $first_name = $user_info['givenName'];
 $last_name = $user_info['familyName'];
 $file_owner = $first_name . " " . $last_name;
+$owner_email = $user_info['email'];
 
 /// Function to get user level
 function getUserLevel() {
@@ -56,7 +57,7 @@ function getUserLevel() {
  
 // SQL query to select data from database
 $sql = " SELECT * FROM users WHERE email = '$email' && first_name = '$first_name' && last_name = '$last_name' ";
-$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && upload_date <= DATE_ADD(CURRENT_DATE, INTERVAL -5 YEAR ) ORDER BY id ASC ";
+$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && upload_date <= DATE_ADD(CURRENT_DATE, INTERVAL -5 YEAR ) ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $result1 = $mysqli->query($sql1);
 $mysqli->close();
@@ -114,7 +115,7 @@ $mysqli->close();
               <li class="profile-pic"><img class="pic" src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" width="150px" height="150px"></li>
               <li style="cursor:default;font-size:15px;"><strong>Full Name:</strong> <?=$user_info['givenName'];?> <?=$user_info['familyName'];?></li>
               <li style="cursor:default;font-size:15px;"><strong>Email:</strong> <?=$user_info['email'];?></li>
-              <li style="cursor:default;font-size:15px;"><strong>User Level:</strong> Student</li>
+              <li style="cursor:default;font-size:15px;"><strong>User Level:</strong> Faculty</li>
             </ul>
           <?php
             }
@@ -123,7 +124,7 @@ $mysqli->close();
         </div>
       </div>
 
-      <div class="outdated-part" hidden>
+      <div class="outdated-part">
         <div class="outdated-box">
           <div class="outdated-boxx">
 		      <div class="alert alert-info" style="margin-top:10px;width: 300px;margin-left:10px;background:linear-gradient(rgba(255, 0, 0, 0.7), rgba(255, 0, 0, 0.7));color: #fff;cursor:default;">
@@ -174,7 +175,9 @@ $mysqli->close();
             <img src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" class="menu-icon">
           </button>
           <div class="menu-content">
-            <a href="profile.php">Profile</a>
+            <a href="faculty_dashboard.php">Profile</a>
+            <a href="uploaded_files.php">Uploaded Files</a>
+            <a href="outdated_files.php">Outdated Files</a>
             <a href="college_directory.php">College Directory</a>
             <a href="#" data-toggle="modal" data-target="#logout">Sign Out</a>
           </div>

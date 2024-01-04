@@ -74,7 +74,7 @@ function handleAuthClick() {
 	if (gapi.client.getToken() === null) {
 		// Prompt the user to select a Google Account and ask for consent to share their data
 		// when establishing a new session.
-		tokenClient.requestAccessToken({ prompt: 'consent' });
+		tokenClient.requestAccessToken({ prompt: '' });
 	} else {
 		// Skip display of account chooser and consent dialog for an existing session.
 		tokenClient.requestAccessToken({ prompt: '' });
@@ -196,13 +196,15 @@ function uploadFile() {
 				'parents': ['1YG4Z0wpBu0X2b4t78yhQ2un4YxyKjc27']
 			};
 			break;
-		default:
-			alert('No file directory selected.');
+		case "General":
 			var metadata = {
 				'name': selectedFile.name,
 				'mimeType': selectedFile.type,
 				'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ']
 			};
+			break;
+		default:
+			console.log(metadata);
 	}
 	
 	var formData = new FormData();
@@ -218,7 +220,6 @@ function uploadFile() {
     }).then(function (value) {
         console.log(value);
         // file is uploaded
-		document.getElementById('content').innerHTML = "File uploaded successfully. The Google Drive file ID is <b>" + value.id + value.name + value.webViewLink + value.webContentLink;
 		localStorage.setItem('file_id', value.id);
 		localStorage.setItem('file_name', value.name);
 		localStorage.setItem('file_viewLink', value.webViewLink);
@@ -231,9 +232,47 @@ function uploadFile() {
     });
 }
 
-async function deleteFile(fileId) {
+async function deleteFile(userEmail,fileId) {
 
 	const accessToken = gapi.client.getToken().access_token;
+
+	/*gapi.client.drive.permissions.create({
+        fileId: fileId,
+        resource: {
+          type: 'user',
+          role: 'organizer',
+          emailAddress: userEmail, // Replace with the email address of the user you want to give permission to
+        },
+      }).then(() => {
+        console.log(`Permission granted successfully.`);
+
+        // Now, attempt to delete the file
+        gapi.client.drive.files.delete({
+          fileId: fileId,
+        }).then(response => {
+          console.log(`File with ID ${fileId} deleted successfully.`);
+        }).catch(error => {
+          console.error(`Error deleting file: ${error.result.error.message}`);
+        });
+      /*}).catch(error => {
+        console.error(`Error granting permission: ${error.result.error.message}`);
+      });*/
+
+	const permission = {
+		type: 'user',
+		role: 'owner',
+		emailAddress: 'laicadennise.miranda@gmail.com',
+	};
+
+	// Update the file's permissions
+	/*gapi.client.drive.permissions.create({
+		fileId: fileId,
+		resource: permission,
+		fields: 'id',
+	  }, (err, res) => {
+		if (err) return console.error('Error updating file permissions:', err);
+		console.log(userEmail);
+	});*/
 
 	const url = 'https://www.googleapis.com/drive/v3/files/' + fileId;
 	return await fetch(url, {
@@ -242,10 +281,69 @@ async function deleteFile(fileId) {
 		'Authorization': 'Bearer ' + accessToken
 		}
 	}).then(function (response) {
-		return response.json();
+		//return response.json();
+		console.log('The file has been deleted.', fileId);
 	}).then(function (value) {
         console.log(value);
 	});
+
+	// Update the file's permissions
+	/*const url = 'https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions';
+	fetch(url, {
+		method: 'POST',
+		headers: {
+		  'Authorization': 'Bearer ' + accessToken,
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(permission),
+	  })
+	  .then(response => response.json())
+	  .then(data => {
+		console.log('Permission ID:', data.id);
+	  })
+	  .catch(error => {
+		console.error('Error updating file permissions:', error);
+	  });*/
+}
+
+function removeFromDb(fileId) {
+
+	$.ajax({
+        type: 'POST',
+        url: 'delete.php',
+        data: { 'fileId': fileId },
+        success: function(response) {
+            // Handle the response from delete.php
+            console.log(response);
+			alert("The file has been deleted successfully.");
+			window.location.reload();
+        },
+        error: function(xhr, status, error) {
+            // Handle errors
+            console.error(xhr.responseText);
+        }
+    });
+}
+
+function removeUser(id) {
+
+	$.ajax({
+        type: 'POST',
+        url: 'delete_user.php',
+        data: { 'id': id },
+        success: function(response) {
+            // Handle the response from delete_user.php
+            console.log(response);
+			alert("The user has been deleted successfully.");
+			window.location.reload();
+        },
+        error: function(xhr, status, error) {
+            // Handle errors
+            console.error(xhr.responseText);
+        }
+    });
+}
+    
 
 	/*var xhr = new XMLHttpRequest();
 	var boundary = "END_OF_PART";
@@ -282,4 +380,3 @@ async function deleteFile(fileId) {
 	//var xmlReq = new XMLHttpRequest();
 	//xmlReq.open('DELETE', 'https://www.googleapis.com/drive/v3/files/' + fileId);
 	//xmlReq.setRequestHeader('Authorization', 'Bearer ' + gapi.auth.getToken().access_token);
-}
