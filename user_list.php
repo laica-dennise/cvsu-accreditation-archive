@@ -31,6 +31,16 @@ if ($mysqli->connect_error) {
     $mysqli->connect_error);
 }
 
+$email = $user_info['email'];
+
+$result2 = $mysqli->query("SELECT user_level FROM users WHERE email = '$email'");
+$row2 = $result2->fetch_assoc();
+
+if ($row2['user_level'] != '0') {
+  echo '<script>alert("The user is not authorized to access this page!");</script>';
+  header('Location: login.php');
+}
+
 // getting user info for uploaded files
 $first_name = $user_info['given_name'];
 $last_name = $user_info['family_name'];
@@ -88,7 +98,7 @@ $mysqli->close();
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CvSU Accreditation Archive System</title>
-    <link rel="stylesheet" type="text/css" href="styles/style5.css" />
+    <link rel="stylesheet" type="text/css" href="styles/style8.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
     <style>
@@ -136,8 +146,12 @@ $mysqli->close();
     }
 
     .pagination {
-          margin-left: 15px;
-        }
+      margin-left: 15px;
+    }
+
+    .pagination2 {
+      margin-left: 15px;
+    }
     </style>
 </head>
 <body>
@@ -185,7 +199,7 @@ $mysqli->close();
       <table class="file-query table table-bordered table-hover table-striped">
         <thead>
             <tr>
-                <th class="text-center">ID</th>
+                <th class="text-center">ACTIVE STATUS</th>
                 <th class="text-center">FIRST NAME</th>
                 <th class="text-center">LAST NAME</th>
                 <th class="text-center">EMAIL</th>
@@ -199,7 +213,10 @@ $mysqli->close();
             while ($rows = $result->fetch_assoc()) {
             ?>
                 <tr class="results">
-                    <td class="text-center"><?php echo $rows['id']; ?></td>
+                <td class="text-center">
+                        <!-- Add a span with a specific class for styling -->
+                        <span class="status <?php echo ($rows['active_status'] == 'Online') ? 'online' : 'offline'; ?>"></span>
+                        <?php echo $rows['active_status']; ?>
                     <td class="text-center"><?php echo $rows['first_name']; ?></td>
                     <td class="text-center"><?php echo $rows['last_name']; ?></td>
                     <td class="text-center"><?php echo $rows['email']; ?></td>
@@ -222,7 +239,7 @@ $mysqli->close();
                     <td class="text-center"><?php echo $rows['college']; ?></td>
                     <td class="text-center">
                       <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal('<?php echo $rows['first_name'];?>','<?php echo $rows['last_name'];?>','<?php echo $rows['email'];?>','<?php echo $rows['user_level'];?>','<?php echo $rows['college'];?>')"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-                      <button class="btn btn-danger btn-delete" type="button" onclick="removeUser(<?php echo $rows['id']; ?>)"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                      <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="removeUser(<?php echo $rows['id']; ?>)"><span class="glyphicon glyphicon-trash"></span> Delete</button>
                     </td>
                 </tr>
             <?php
@@ -230,19 +247,26 @@ $mysqli->close();
             ?>
           </tbody>
         </table>
-        <!-- Pagination -->
-        <div class="pagination">
+        <!-- Modified Pagination -->
+        <div class="pagination-container">
           <?php if ($page > 1): ?>
-              <a href="?page=<?php echo $page - 1; ?>">Previous</a>
+              <a href="?page=<?php echo $page - 1; ?>" class="pagination-link">Previous</a>
           <?php endif; ?>
 
-          <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-              <a href="?page=<?php echo $i; ?>" <?php echo ($i == $page) ? 'class="active"' : ''; ?>><?php echo $i; ?></a>
-          <?php endfor; ?>
+          <div class="pagination-info">
+              <span>Page <?php echo $page; ?> of <?php echo $totalPages; ?></span>
+          </div>
 
           <?php if ($page < $totalPages): ?>
-              <a href="?page=<?php echo $page + 1; ?>">Next</a>
+              <a href="?page=<?php echo $page + 1; ?>" class="pagination-link">Next</a>
           <?php endif; ?>
+
+          <!-- Page input field -->
+          <form action="" method="GET" class="pagination-form">
+              <label for="pageInput" class="pagination-label">Go to Page:</label>
+              <input type="number" id="pageInput" name="page" min="1" max="<?php echo $totalPages; ?>" value="<?php echo $page; ?>" class="pagination-input">
+              <button type="submit" class="pagination-button">Go</button>
+          </form>
         </div>
       </section>
       </div>
@@ -250,7 +274,7 @@ $mysqli->close();
       <div id="require-access">
       <div class="alert alert-info" style="margin-top:10px; width:450px; margin-left: 15px; background: #f5dfc1;"> Requires Approval </div>
       <section>
-      <table class="file-query table table-bordered table-hover table-striped">
+      <table class="file-query2 table table-bordered table-hover table-striped">
         <thead>
             <tr>
                 <th class="text-center">ID</th>
@@ -259,6 +283,7 @@ $mysqli->close();
                 <th class="text-center">EMAIL</th>
                 <th class="text-center">USER LEVEL</th>
                 <th class="text-center">COLLEGE</th>
+                <th class="text-center">ACTION</th>
             </tr>
         </thead>
         <tbody>
@@ -287,25 +312,35 @@ $mysqli->close();
                          ?>
                     </td>
                     <td class="text-center"><?php echo $rows['college']; ?></td>
+                    <td class="text-center">
+                      <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="removeUserRequest(<?php echo $rows['id']; ?>)"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                    </td>
                 </tr>
             <?php
             }
             ?>
           </tbody>
        </table>
-       <!-- Pagination -->
-       <div class="pagination">
+        <!-- Modified Pagination -->
+        <div class="pagination-container2" style="<?php echo $totalRecords1 == 0 ? 'display:none' : ''; ?>">
           <?php if ($page1 > 1): ?>
-              <a href="?page=<?php echo $page1 - 1; ?>">Previous</a>
+              <a href="?page=<?php echo $page1 - 1; ?>" class="pagination-link2">Previous</a>
           <?php endif; ?>
 
-          <?php for ($i = 1; $i <= $totalPages1; $i++): ?>
-              <a href="?page=<?php echo $i; ?>" <?php echo ($i == $page1) ? 'class="active"' : ''; ?>><?php echo $i; ?></a>
-          <?php endfor; ?>
+          <div class="pagination-info2">
+              <span>Page <?php echo $page1; ?> of <?php echo $totalPages1; ?></span>
+          </div>
 
           <?php if ($page1 < $totalPages1): ?>
-              <a href="?page=<?php echo $page1 + 1; ?>">Next</a>
+              <a href="?page=<?php echo $page1 + 1; ?>" class="pagination-link2">Next</a>
           <?php endif; ?>
+
+          <!-- Page input field -->
+          <form action="" method="GET" class="pagination-form2">
+              <label for="pageInput" class="pagination-label2">Go to Page:</label>
+              <input type="number" id="pageInput" name="page" min="1" max="<?php echo $totalPages1; ?>" value="<?php echo $page1; ?>" class="pagination-input2">
+              <button type="submit" class="pagination-button2">Go</button>
+          </form>
         </div>
       </section>
       </div>

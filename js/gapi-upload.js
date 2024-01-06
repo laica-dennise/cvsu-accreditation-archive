@@ -232,7 +232,7 @@ function uploadFile() {
     });
 }
 
-async function deleteFile(userEmail,fileId) {
+async function deleteFile(fileId) {
 
 	const accessToken = gapi.client.getToken().access_token;
 
@@ -339,6 +339,23 @@ function removeUser(id) {
         },
         error: function(xhr, status, error) {
             // Handle errors
+            console.error(xhr.responseText);
+        }
+    });
+}
+
+function removeUserRequest(id) {
+
+	$.ajax({
+        type: 'POST',
+        url: 'delete_request.php',
+        data: { 'id': id },
+        success: function(response) {
+            console.log(response);
+			alert("The user access request has been removed.");
+			window.location.reload();
+        },
+        error: function(xhr, status, error) {
             console.error(xhr.responseText);
         }
     });

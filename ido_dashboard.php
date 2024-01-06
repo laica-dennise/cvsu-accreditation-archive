@@ -31,6 +31,16 @@ if ($mysqli->connect_error) {
     $mysqli->connect_error);
 }
 
+$email = $user_info['email'];
+
+$result2 = $mysqli->query("SELECT user_level FROM users WHERE email = '$email'");
+$row2 = $result2->fetch_assoc();
+
+if ($row2['user_level'] != '1') {
+  echo '<script>alert("The user is not authorized to access this page!");</script>';
+  echo '<script>window.location.href = "login.php";</script>';
+}
+
 // getting user info for uploaded files
 $email = $user_info['email'];
 $first_name = $user_info['givenName'];
@@ -56,7 +66,7 @@ function getUserLevel() {
  
 // SQL query to select data from database
 $sql = " SELECT * FROM users WHERE email = '$email' && first_name = '$first_name' && last_name = '$last_name' ";
-$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && upload_date <= DATE_ADD(CURRENT_DATE, INTERVAL -5 YEAR ) ORDER BY id ASC ";
+$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && CURDATE() > valid_until ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $result1 = $mysqli->query($sql1);
 $mysqli->close();
@@ -76,12 +86,18 @@ $mysqli->close();
             background: linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .7));
             border-collapse: collapse;
             z-index: 0;
+            width: 765px;
           }
           th, td {
             padding: 8px;
-            border-bottom: 1px solid #000;
-            text-align: left;
+            border: 1px solid #ddd;
             cursor: default;
+            text-align: center;
+          }
+
+          th {
+            background-color: #af514c;
+            color: white;
           }
 
           td {
@@ -134,12 +150,9 @@ $mysqli->close();
                 <tr>
                     <th>ID</th>
                     <th>NAME</th>
-                    <th>TYPE</th>
-                    <th>SIZE</th>
                     <th>DATE UPLOADED</th>
-                    <th>File Directory</th>
-                    <th>File Course</th>
-                    <th>Tags</th>
+                    <th>COLLEGE</th>
+                    <th>TAGS</th>
                 </tr>
 
                 <?php
@@ -147,15 +160,11 @@ $mysqli->close();
                     {
                 ?>
                 <tr class="results">
-                    <td><?php echo $rows['id'];?></td>
-                    <td><?php echo $rows['file_name'];?></td>
-                    <td><?php echo $rows['file_type'];?></td>
-                    <td><?php echo $rows['file_size'];?></td>
+                    <<td><?php echo $rows['id'];?></td>
+                    <td><?php echo substr($rows['file_name'], 0, 40); ?></td>
                     <td><?php echo $rows['upload_date'];?></td>
                     <td><?php echo $rows['file_directory'];?></td>
-                    <td><?php echo $rows['file_course'];?></td>
                     <td><?php echo $rows['file_tags']?></td>
-                </tr>
                 <?php
                     }
                 ?>
@@ -174,7 +183,6 @@ $mysqli->close();
             <img src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" class="menu-icon">
           </button>
           <div class="menu-content">
-            <a href="ido_dashboard.php">Profile</a>
             <a href="uploaded_files.php">Uploaded Files</a>
             <a href="outdated_files.php">Outdated Files</a>
             <a href="#" data-toggle="modal" data-target="#logout">Sign Out</a>
