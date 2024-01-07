@@ -74,7 +74,7 @@ $totalPages = ceil($totalRecords / $limit);
 
 // SQL query to select data from database with pagination
 $sql = " SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() > valid_until ORDER BY id ASC ";
-$sql1 = "SELECT * FROM files WHERE valid_until IS NOT NULL AND valid_until <= CURRENT_DATE ORDER BY id ASC";
+$sql1 = "SELECT * FROM files WHERE valid_until IS NOT NULL AND valid_until < CURRENT_DATE ORDER BY id ASC";
 $result = $mysqli->query($sql);
 $result1 = $mysqli->query($sql1);
 $result2 = $mysqli->query($sql);

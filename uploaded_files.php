@@ -84,7 +84,7 @@ function getUserCollege() {
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $limit = 5; // Number of rows per page set to 5
 $offset = ($page - 1) * $limit; // Corrected offset calculation
-$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() < valid_until")->fetch_assoc()['total'];
+$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() <= valid_until")->fetch_assoc()['total'];
 $totalPages = ceil($totalRecords / $limit);
 
 // Get the selected sorting option and order from the form
@@ -96,10 +96,10 @@ if ($sortOption === 'upload_date') {
     // Check if the user selected the order by date old to new
     $dateOrder = ($order === 'desc') ? 'ASC' : 'DESC';
 
-    $sql = "SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() < valid_until ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() <= valid_until ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
 } else {
     // For other columns
-    $sql = "SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() < valid_until ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() <= valid_until ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
 }
 $result = $mysqli->query($sql);
 ?>

@@ -67,7 +67,7 @@ $file_owner = $first_name . " " . $last_name;
  
 // SQL query to select data from database
 $sql = " SELECT * FROM users WHERE email = '$email' && first_name = '$first_name' && last_name = '$last_name' ";
-$sql1 = " SELECT * FROM files WHERE CURDATE() > valid_until ORDER BY id ASC ";
+$sql1 = " SELECT * FROM files WHERE valid_until IS NOT NULL AND valid_until < CURRENT_DATE ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $result1 = $mysqli->query($sql1);
 $mysqli->close();

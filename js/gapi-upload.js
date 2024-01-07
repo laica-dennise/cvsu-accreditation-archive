@@ -1,4 +1,3 @@
-// TODO: Set the below credentials
 const CLIENT_ID = '75132863473-h6i0tqj5tuc7jbm6ptjgrlb7snvv8im6.apps.googleusercontent.com';
 const CLIENT_SECRET = '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';
 
@@ -7,23 +6,17 @@ const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/res
 
 const KEYFILEPATH = 'C:\\xampp\\htdocs\\cvsu_accrsystem\\cvsu-accreditation-37a00b400711.json';
 
-// Set API access scope before proceeding authorization request
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 let tokenClient;
 let gapiInited = false;
 let gisInited = false;
 
-/**
- * Callback after api.js is loaded.
- */
+//Callback after api.js is loaded.
 function gapiLoaded() {
 	gapi.load('client', initializeGapiClient);
 }
 
-/**
- * Callback after the API client is loaded. Loads the
- * discovery doc to initialize the API.
- */
+//Callback after the API client is loaded. Loads the discovery doc to initialize the API.
 async function initializeGapiClient() {
 	await gapi.client.init({
 		client_secret: CLIENT_SECRET,
@@ -33,31 +26,24 @@ async function initializeGapiClient() {
 	maybeEnableButtons();
 }
 
-/**
- * Callback after Google Identity Services are loaded.
- */
+//Callback after Google Identity Services are loaded.
 function gisLoaded() {
 	tokenClient = google.accounts.oauth2.initTokenClient({
 		client_id: CLIENT_ID,
 		scope: SCOPES, 
-		callback: '', // defined later
+		callback: '',
 	});
 	gisInited = true;
 	maybeEnableButtons();
 }
 
-/**
- * Enables user interaction after all libraries are loaded.
- */
+//Enables user interaction after all libraries are loaded.
 function maybeEnableButtons() {
 	if (gapiInited && gisInited) {
-		//document.getElementById('authorize_button').style.visibility = 'visible';
 	}
 }
 
-/**
- *  Sign in the user upon button click.
- */
+//Sign in the user upon button click.
 function handleAuthClick() {
 	tokenClient.callback = async (resp) => {
 		if (resp.error !== undefined) {
@@ -67,23 +53,15 @@ function handleAuthClick() {
         document.getElementById('authorize_button').style.visibility = 'hidden';
         document.getElementById('fileInput').style.visibility = 'visible';
 		document.getElementById('uploadButton').style.visibility = 'visible';
-		//await uploadFile();
-
 	};
-
 	if (gapi.client.getToken() === null) {
-		// Prompt the user to select a Google Account and ask for consent to share their data
-		// when establishing a new session.
 		tokenClient.requestAccessToken({ prompt: '' });
 	} else {
-		// Skip display of account chooser and consent dialog for an existing session.
 		tokenClient.requestAccessToken({ prompt: '' });
 	}
 }
 
-/**
- *  Sign out the user upon button click.
- */
+//Sign out the user upon button click.
 function handleSignoutClick() {
 	const token = gapi.client.getToken();
 	if (token !== null) {
@@ -98,17 +76,14 @@ function handleSignoutClick() {
 	}
 }
 
-function uploadFile() {
-            
+function uploadFile() {      
     const fileInput = document.getElementById('fileInput');
     const selectedFile = fileInput.files[0];
 	const directory = document.getElementById('directories').value;
-
     if (!selectedFile) {
         alert('Please select a file to upload.');
         return;
     }
-
     // Check if the selected file type is allowed
     const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(selectedFile.type)) {
@@ -147,7 +122,7 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
+						// file is uploaded and values set as cookies
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -156,14 +131,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "CAS":
 			var fileName = selectedFile.name;
 			var parent = '1_iD1SgmR0j842o0Oo0W2BOohmSf5tbGR';
@@ -182,7 +155,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -192,7 +164,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -201,14 +172,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-			
 		case "CCJ":
 			var fileName = selectedFile.name;
 			var parent = '1ulh8Z5zVz6iJzO0AXO6GAJQBbP2Dkm7g';
@@ -227,7 +196,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -237,7 +205,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -246,14 +213,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "CED":
 			var fileName = selectedFile.name;
 			var parent = '1prhnN8SQkVBmg2cO3Nq2RFZXoaYF3bXZ';
@@ -272,7 +237,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -282,7 +246,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -291,14 +254,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "CEMDS":
 			var fileName = selectedFile.name;
 			var parent = '1EGaDpuwOAqrJrP4vW5WhD5iWAMXQra1j';
@@ -317,7 +278,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -327,7 +287,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -336,14 +295,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "CEIT":
 			var fileName = selectedFile.name;
 			var parent = '1ShUNEQ9F_wN6Nxuyo-8y9j4JKig8dlmg';
@@ -362,7 +319,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -372,7 +328,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -381,14 +336,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "CON":
 			var fileName = selectedFile.name;
 			var parent = '1hqDXkWjvcsB0WKNYw_roijPj9eDTC8fn';
@@ -407,7 +360,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -417,7 +369,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -426,14 +377,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-			
 		case "CSPEAR":
 			var fileName = selectedFile.name;
 			var parent = '1fjGBBGdSEEZmxRIbVl8X-1zFvmIep51o';
@@ -452,7 +401,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -462,7 +410,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -471,14 +418,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "CVMBS":
 			var fileName = selectedFile.name;
 			var parent = '1JLQ7RBz41Z72CBdcrFKkrjHyCzQbcnlE';
@@ -497,7 +442,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -507,7 +451,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -516,14 +459,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "College of Medicine":
 			var fileName = selectedFile.name;
 			var parent = '1-adk4eqga1fBQLTReLIKP_eBTUTzF81v';
@@ -542,7 +483,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -552,7 +492,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -561,14 +500,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "Graduate School and Open Learning College":
 			var fileName = selectedFile.name;
 			var parent = '1YG4Z0wpBu0X2b4t78yhQ2un4YxyKjc27';
@@ -587,7 +524,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -597,7 +533,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -606,14 +541,12 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		case "General":
 			var fileName = selectedFile.name;
 			var parent = '1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ';
@@ -632,7 +565,6 @@ function uploadFile() {
 					};
 					var formData = new FormData();
 					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-					// set file as blob formate
 					formData.append("file", selectedFile);
 					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
 						method: 'POST',
@@ -642,7 +574,6 @@ function uploadFile() {
 						return response.json();
 					}).then(function (value) {
 						console.log(value);
-						// file is uploaded
 						localStorage.setItem('file_id', value.id);
 						localStorage.setItem('file_name', value.name);
 						localStorage.setItem('file_viewLink', value.webViewLink);
@@ -651,60 +582,19 @@ function uploadFile() {
 						document.cookie = "file_name=" + value.name;
 						document.cookie = "view_link=" + value.webViewLink;
 						document.cookie = "download_link=" + value.webContentLink;
-						
 					});
 				}
 			}).catch((error) => {
 				console.error('Error checking file existence:', error);
 			});
 			break;
-
 		default:
 			console.log(metadata);
 	}
 }
 
 async function deleteFile(fileId) {
-
 	const accessToken = gapi.client.getToken().access_token;
-
-	/*gapi.client.drive.permissions.create({
-        fileId: fileId,
-        resource: {
-          type: 'user',
-          role: 'organizer',
-          emailAddress: userEmail, // Replace with the email address of the user you want to give permission to
-        },
-      }).then(() => {
-        console.log(`Permission granted successfully.`);
-
-        // Now, attempt to delete the file
-        gapi.client.drive.files.delete({
-          fileId: fileId,
-        }).then(response => {
-          console.log(`File with ID ${fileId} deleted successfully.`);
-        }).catch(error => {
-          console.error(`Error deleting file: ${error.result.error.message}`);
-        });
-      /*}).catch(error => {
-        console.error(`Error granting permission: ${error.result.error.message}`);
-      });*/
-
-	const permission = {
-		type: 'user',
-		role: 'owner',
-		emailAddress: 'laicadennise.miranda@gmail.com',
-	};
-
-	// Update the file's permissions
-	/*gapi.client.drive.permissions.create({
-		fileId: fileId,
-		resource: permission,
-		fields: 'id',
-	  }, (err, res) => {
-		if (err) return console.error('Error updating file permissions:', err);
-		console.log(userEmail);
-	});*/
 
 	const url = 'https://www.googleapis.com/drive/v3/files/' + fileId;
 	return await fetch(url, {
@@ -713,71 +603,45 @@ async function deleteFile(fileId) {
 		'Authorization': 'Bearer ' + accessToken
 		}
 	}).then(function (response) {
-		//return response.json();
 		console.log('The file has been deleted.', fileId);
 	}).then(function (value) {
         console.log(value);
 	});
-
-	// Update the file's permissions
-	/*const url = 'https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions';
-	fetch(url, {
-		method: 'POST',
-		headers: {
-		  'Authorization': 'Bearer ' + accessToken,
-		  'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(permission),
-	  })
-	  .then(response => response.json())
-	  .then(data => {
-		console.log('Permission ID:', data.id);
-	  })
-	  .catch(error => {
-		console.error('Error updating file permissions:', error);
-	  });*/
 }
 
 function removeFromDb(fileId) {
-
 	$.ajax({
         type: 'POST',
         url: 'delete.php',
         data: { 'fileId': fileId },
         success: function(response) {
-            // Handle the response from delete.php
             console.log(response);
 			alert("The file has been deleted successfully.");
 			window.location.reload();
         },
         error: function(xhr, status, error) {
-            // Handle errors
             console.error(xhr.responseText);
         }
     });
 }
 
 function removeUser(id) {
-
 	$.ajax({
         type: 'POST',
         url: 'delete_user.php',
         data: { 'id': id },
         success: function(response) {
-            // Handle the response from delete_user.php
             console.log(response);
 			alert("The user has been deleted successfully.");
 			window.location.reload();
         },
         error: function(xhr, status, error) {
-            // Handle errors
             console.error(xhr.responseText);
         }
     });
 }
 
 function removeUserRequest(id) {
-
 	$.ajax({
         type: 'POST',
         url: 'delete_request.php',
@@ -792,40 +656,3 @@ function removeUserRequest(id) {
         }
     });
 }
-    
-
-	/*var xhr = new XMLHttpRequest();
-	var boundary = "END_OF_PART";
-	var separation = "\n--"+boundary + "\n";
-
-	var requestBody = ()=>{
-		separation +
-		"Content-Type: application/http\n\n" +
-		"DELETE https://www.googleapis.com/drive/v3/files/" +
-		fileId +
-		"\nAuthorization: Bearer " + accessToken;
-		};
-
-	/*xmlReq.open('DELETE', 'https://www.googleapis.com/drive/v3/files/' + fileId);
-	xmlReq.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-
-	xmlReq.onload = ()=> {
-		console.log(xmlReq.response);
-	};*/
-
-	/*xhr.onload = ()=>{
-		console.log(xhr.response);
-		//handle the response
-	};*/
-	/*xhr.open("DELETE", "https://www.googleapis.com/drive/v3/files/" + {fileId}, true);
-	xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-	//xhr.send(requestBody);
-
-	xhr.onload = ()=>{
-		console.log(xhr.response);
-		//handle the response
-	};*/
-
-	//var xmlReq = new XMLHttpRequest();
-	//xmlReq.open('DELETE', 'https://www.googleapis.com/drive/v3/files/' + fileId);
-	//xmlReq.setRequestHeader('Authorization', 'Bearer ' + gapi.auth.getToken().access_token);

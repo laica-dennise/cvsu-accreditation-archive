@@ -238,8 +238,14 @@ $mysqli->close();
                     </td>
                     <td class="text-center"><?php echo $rows['college']; ?></td>
                     <td class="text-center">
-                      <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal('<?php echo $rows['first_name'];?>','<?php echo $rows['last_name'];?>','<?php echo $rows['email'];?>','<?php echo $rows['user_level'];?>','<?php echo $rows['college'];?>')"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-                      <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="removeUser(<?php echo $rows['id']; ?>)"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                    <?php
+                        if ($rows['email'] != $email) {
+                      ?>
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal" onclick="openEditModal('<?php echo $rows['first_name'];?>','<?php echo $rows['last_name'];?>','<?php echo $rows['email'];?>','<?php echo $rows['user_level'];?>','<?php echo $rows['college'];?>')"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+                        <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="removeUser(<?php echo $rows['id']; ?>)"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                      <?php
+                        }
+                      ?>
                     </td>
                 </tr>
             <?php
