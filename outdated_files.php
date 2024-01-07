@@ -67,7 +67,7 @@ function getUserLevel() {
 
 // Pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$limit = 7; // Number of rows per page set to 7
+$limit = 5; // Number of rows per page set to 5
 $offset = ($page - 1) * $limit; // Corrected offset calculation
 $totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() > valid_until")->fetch_assoc()['total'];
 $totalPages = ceil($totalRecords / $limit);
@@ -148,14 +148,14 @@ $result2 = $mysqli->query($sql);
         <table class="file-query table table-bordered table-hover table-striped">
         <thead>
           <tr>
-            <th class="text-center">ID</th>
-            <th class="text-center">NAME</th>
+          <th class="text-center">ID</th>
+            <th class="text-center" style="width: 250px;">NAME</th>
             <th class="text-center" style="width: 125px;">OWNER</th>
             <th class="text-center">DATE UPLOADED</th>
             <th class="text-center">VALID UNTIL</th>
-            <th class="text-center">COLLEGE</th>
-            <th class="text-center">COURSE</th>
-            <th class="text-center">TAGS</th>
+            <th class="text-center" style="width: 150px;">COLLEGE</th>
+            <th class="text-center" style="width: 150px;">COURSE</th>
+            <th class="text-center" style="width: 120px;">TAGS</th>
             <th class="text-center" colspan="3">ACTIONS</th>
           </tr>
         </thead>
@@ -167,7 +167,7 @@ $result2 = $mysqli->query($sql);
           ?>
           <tr class="results" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">
               <td class="text-center"><?php echo $rows['id']; ?></td>
-              <td class="text-center"><?php echo substr($rows['file_name'], 0, 30); ?></td>
+              <td class="text-center"><?php echo $rows['file_name']; ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
               <td class="text-center"><?php echo $rows['valid_until'];?></td>
@@ -183,11 +183,11 @@ $result2 = $mysqli->query($sql);
                     if (!empty($tag)) {
                         // Remove "×" marks and extra commas
                         $tag = str_replace('×', '', $tag);
-                        $cleanedTags[] = '#' . htmlspecialchars($tag);
+                        $cleanedTags[] = '' . htmlspecialchars($tag);
                     }
                 }
 
-                $formattedTags = implode(' ', $cleanedTags);
+                $formattedTags = implode(', ', $cleanedTags);
                 echo rtrim($formattedTags, ' ');
                 ?>
               </td>
@@ -213,7 +213,7 @@ $result2 = $mysqli->query($sql);
           ?>
             <tr class="results1" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">
               <td class="text-center"><?php echo $rows['id']; ?></td>
-              <td class="text-center"><?php echo substr($rows['file_name'], 0, 30); ?></td>
+              <td class="text-center"><?php echo $rows['file_name']; ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
               <td class="text-center"><?php echo $rows['valid_until'];?></td>
@@ -259,7 +259,7 @@ $result2 = $mysqli->query($sql);
           ?>
             <tr class="results2" style="<?php echo (getUserLevel() != 2) ? 'display:none;' : '';?>">
               <td class="text-center"><?php echo $rows['id']; ?></td>
-              <td class="text-center"><?php echo substr($rows['file_name'], 0, 30); ?></td>
+              <td class="text-center"><?php echo $rows['file_name']; ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
               <td class="text-center"><?php echo $rows['valid_until'];?></td>
@@ -451,8 +451,8 @@ $result2 = $mysqli->query($sql);
       </div>
       <div class="modal-footer">
         <a type="button" class="btn btn-success" data-dismiss="modal">No</a>
-        <button type="button" class="btn btn-danger" onclick="deleteFile('<?php echo $fileId;?>');delayDelete();" data-dismiss="modal">Yes</button>
-        <button class="remove-db" id="removeDb" type="button" onclick="removeFromDb('<?php echo $fileId;?>')" hidden></button>
+        <button type="button" class="btn btn-danger btn-del" data-dismiss="modal">Yes</button>
+        <button class="remove-db" id="removeDb" type="button" hidden></button>
       </div>
     </div>
   </div>
@@ -692,6 +692,41 @@ $result2 = $mysqli->query($sql);
     </script>
 
     <script>
+
+        // Get the button and modal elements
+        var openModalButton = document.querySelectorAll('.btn-delete');
+        var modal = document.getElementById('modal_remove');
+        var buttonInsideModal = document.querySelector('.btn-del');
+
+        // Attach a click event listener to each button
+        openModalButton.forEach(function(button) {
+            button.addEventListener('click', function() {
+              // Get the data-id attribute value of the clicked button
+              var dataId = button.getAttribute('data-id');
+
+              // Open the modal and pass the data-id
+              showModalWithDataId(dataId);
+            });
+        });
+
+        // Function to show the modal with data-id parameter
+        function showModalWithDataId(dataId) {
+
+
+          // Display or manipulate the modal as needed
+          modal.style.display = 'block';
+
+          // Attach a click event listener to the button inside the modal
+        buttonInsideModal.addEventListener('click', function() {
+          // Use the data-id inside the modal as needed
+          deleteFile(dataId);
+          setTimeout(function() {
+            removeFromDb(dataId);
+          }, 3000);
+          console.log('The file ID of the deleted file: ', dataId);
+        });
+        }
+
         function deleteFromDrive() {
           document.getElementById('removeFromDrive').click();
         }

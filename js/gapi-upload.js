@@ -120,116 +120,548 @@ function uploadFile() {
 
 	switch (directory) {
 		case "CAFENR":
-			var metadata = {
-				'name': selectedFile.name, // Filename at Google Drive
-				'mimeType': selectedFile.type, // mimeType at Google Drive
-				'parents': ['1TOtgbbPoKIr3JZNyVfP4D6SJdYf3aOW_'] // Folder ID at Google Drive
-			};
+			var fileName = selectedFile.name;
+			var parent = '1TOtgbbPoKIr3JZNyVfP4D6SJdYf3aOW_';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1TOtgbbPoKIr3JZNyVfP4D6SJdYf3aOW_']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "CAS":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1_iD1SgmR0j842o0Oo0W2BOohmSf5tbGR']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1_iD1SgmR0j842o0Oo0W2BOohmSf5tbGR';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1_iD1SgmR0j842o0Oo0W2BOohmSf5tbGR']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+			
 		case "CCJ":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1ulh8Z5zVz6iJzO0AXO6GAJQBbP2Dkm7g']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1ulh8Z5zVz6iJzO0AXO6GAJQBbP2Dkm7g';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1ulh8Z5zVz6iJzO0AXO6GAJQBbP2Dkm7g']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "CED":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1prhnN8SQkVBmg2cO3Nq2RFZXoaYF3bXZ']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1prhnN8SQkVBmg2cO3Nq2RFZXoaYF3bXZ';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1prhnN8SQkVBmg2cO3Nq2RFZXoaYF3bXZ']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "CEMDS":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1EGaDpuwOAqrJrP4vW5WhD5iWAMXQra1j']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1EGaDpuwOAqrJrP4vW5WhD5iWAMXQra1j';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1EGaDpuwOAqrJrP4vW5WhD5iWAMXQra1j']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "CEIT":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1ShUNEQ9F_wN6Nxuyo-8y9j4JKig8dlmg']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1ShUNEQ9F_wN6Nxuyo-8y9j4JKig8dlmg';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1ShUNEQ9F_wN6Nxuyo-8y9j4JKig8dlmg']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "CON":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1hqDXkWjvcsB0WKNYw_roijPj9eDTC8fn']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1hqDXkWjvcsB0WKNYw_roijPj9eDTC8fn';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1hqDXkWjvcsB0WKNYw_roijPj9eDTC8fn']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+			
 		case "CSPEAR":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1fjGBBGdSEEZmxRIbVl8X-1zFvmIep51o']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1fjGBBGdSEEZmxRIbVl8X-1zFvmIep51o';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1fjGBBGdSEEZmxRIbVl8X-1zFvmIep51o']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "CVMBS":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1JLQ7RBz41Z72CBdcrFKkrjHyCzQbcnlE']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1JLQ7RBz41Z72CBdcrFKkrjHyCzQbcnlE';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1JLQ7RBz41Z72CBdcrFKkrjHyCzQbcnlE']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "College of Medicine":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1-adk4eqga1fBQLTReLIKP_eBTUTzF81v']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1-adk4eqga1fBQLTReLIKP_eBTUTzF81v';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1-adk4eqga1fBQLTReLIKP_eBTUTzF81v']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "Graduate School and Open Learning College":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1YG4Z0wpBu0X2b4t78yhQ2un4YxyKjc27']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1YG4Z0wpBu0X2b4t78yhQ2un4YxyKjc27';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1YG4Z0wpBu0X2b4t78yhQ2un4YxyKjc27']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		case "General":
-			var metadata = {
-				'name': selectedFile.name,
-				'mimeType': selectedFile.type,
-				'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ']
-			};
+			var fileName = selectedFile.name;
+			var parent = '1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ';
+			gapi.client.drive.files.list({
+				q: `name='${fileName}' and '${parent}' in parents`,
+				spaces: 'drive',
+			}).then((response) => {
+				const files = response.result.files;
+        		if (files && files.length > 0) {
+					alert("File: " + selectedFile.name + " already exists in the database.");
+				} else {
+					var metadata = {
+						'name': fileName,
+						'mimeType': selectedFile.type,
+						'parents': ['1cS_xmX5ct0FV4bP9LZfDlc_vd72ZYpPZ']
+					};
+					var formData = new FormData();
+					formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+					// set file as blob formate
+					formData.append("file", selectedFile);
+					fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
+						method: 'POST',
+						headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
+						body: formData
+					}).then(function (response) {
+						return response.json();
+					}).then(function (value) {
+						console.log(value);
+						// file is uploaded
+						localStorage.setItem('file_id', value.id);
+						localStorage.setItem('file_name', value.name);
+						localStorage.setItem('file_viewLink', value.webViewLink);
+						localStorage.setItem('file_downloadLink', value.webContentLink);
+						document.cookie = "file_id=" + value.id;
+						document.cookie = "file_name=" + value.name;
+						document.cookie = "view_link=" + value.webViewLink;
+						document.cookie = "download_link=" + value.webContentLink;
+						
+					});
+				}
+			}).catch((error) => {
+				console.error('Error checking file existence:', error);
+			});
 			break;
+
 		default:
 			console.log(metadata);
 	}
-	
-	var formData = new FormData();
-    formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    // set file as blob formate
-    formData.append("file", selectedFile);
-    fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink", {
-        method: 'POST',
-        headers: new Headers({ "Authorization": "Bearer " + gapi.auth.getToken().access_token }),
-        body: formData
-    }).then(function (response) {
-        return response.json();
-    }).then(function (value) {
-        console.log(value);
-        // file is uploaded
-		localStorage.setItem('file_id', value.id);
-		localStorage.setItem('file_name', value.name);
-		localStorage.setItem('file_viewLink', value.webViewLink);
-		localStorage.setItem('file_downloadLink', value.webContentLink);
-		document.cookie = "file_id=" + value.id;
-		document.cookie = "file_name=" + value.name;
-		document.cookie = "view_link=" + value.webViewLink;
-		document.cookie = "download_link=" + value.webContentLink;
-		
-    });
 }
 
 async function deleteFile(fileId) {

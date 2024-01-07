@@ -121,16 +121,16 @@ $mysqli->close();
           </div>
           <div class="profile-boxx">
           <div class="profile-info">
-            <p class="profile-label" style="margin-left:12px;font-size:40px;color:#174a21;cursor:default;"><b>PROFILE</b></p>
+            <p class="profile-label" style="margin-left:12px;font-size:40px;color:#174a21;cursor:default;margin-top:10px;"><b>PROFILE</b></p>
           <?php
             while($rows=$result->fetch_assoc())
             {
           ?>
             <ul>
-              <li class="profile-pic"><img class="pic" src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" width="150px" height="150px"></li>
-              <li style="cursor:default;font-size:15px;"><strong>Full Name:</strong> <?=$user_info['givenName'];?> <?=$user_info['familyName'];?></li>
-              <li style="cursor:default;font-size:15px;"><strong>Email:</strong> <?=$user_info['email'];?></li>
-              <li style="cursor:default;font-size:15px;"><strong>User Level:</strong> IDO</li>
+              <li class="profile-pic" style="text-align:center;margin-right:40px;margin-bottom:20px;"><img class="pic" src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" width="150px" height="150px"></li>
+              <li style="cursor:default;font-size:15px;text-align:center;margin-right:40px;margin-bottom:20px;"><strong>Full Name:</strong> <?=$user_info['givenName'];?> <?=$user_info['familyName'];?></li>
+              <li style="cursor:default;font-size:15px;text-align:center;margin-right:40px;margin-bottom:20px;"><strong>Email:</strong> <?=$user_info['email'];?></li>
+              <li style="cursor:default;font-size:15px;text-align:center;margin-right:40px;margin-bottom:20px;"><strong>User Level:</strong> IDO</li>
             </ul>
           <?php
             }
@@ -164,7 +164,24 @@ $mysqli->close();
                     <td><?php echo substr($rows['file_name'], 0, 40); ?></td>
                     <td><?php echo $rows['upload_date'];?></td>
                     <td><?php echo $rows['file_directory'];?></td>
-                    <td><?php echo $rows['file_tags']?></td>
+                    <td class="text-center">
+                      <?php
+                      $tags = explode(',', $rows['file_tags']);
+                      $cleanedTags = [];
+
+                      foreach ($tags as $tag) {
+                          $tag = trim($tag);
+                          if (!empty($tag)) {
+                              // Remove "×" marks and extra commas
+                              $tag = str_replace('×', '', $tag);
+                              $cleanedTags[] = '' . htmlspecialchars($tag);
+                          }
+                      }
+
+                      $formattedTags = implode(', ', $cleanedTags);
+                      echo rtrim($formattedTags, ' ');
+                      ?>
+                    </td>
                 <?php
                     }
                 ?>

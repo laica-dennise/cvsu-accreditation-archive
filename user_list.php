@@ -228,7 +228,7 @@ $mysqli->close();
                             } elseif ($userLevel == 1) {
                                     echo 'IDO';
                             } elseif ($userLevel == 2) {
-                                    echo 'Faculty';
+                                    echo 'College Accreditation Officer';
                             } elseif ($userLevel == 3) {
                                     echo 'Student';
                             } else {
@@ -303,7 +303,7 @@ $mysqli->close();
                             } elseif ($userLevel == 1) {
                                     echo 'IDO';
                             } elseif ($userLevel == 2) {
-                                    echo 'Faculty';
+                                    echo 'College Accreditation Officer';
                             } elseif ($userLevel == 3) {
                                     echo 'Student';
                             } else {
@@ -390,8 +390,7 @@ $mysqli->close();
         <legend class="user-level">Access as</legend>
           <select name="user_level" id="user_level" onchange="showCollege()">
             <option value="1">IDO</option>
-            <option value="2">Faculty</option>
-            <option value="3">Student</option>
+            <option value="2">College Accreditation Officer</option>
           </select>
       </fieldset>
       <div id="college-selection" class="college-selection">
@@ -448,8 +447,7 @@ $mysqli->close();
           <select name="userLevel" id="userLevel" onchange="showUserCollege()">
             <option value="0">Admin</option>
             <option value="1">IDO</option>
-            <option value="2">Faculty</option>
-            <option value="3">Student</option>
+            <option value="2">College Accreditation Officer</option>
           </select>
       </fieldset>
       <div id="college-selectionn" class="college-selectionn">

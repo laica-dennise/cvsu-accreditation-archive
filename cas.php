@@ -55,7 +55,7 @@ function getUserLevel() {
 
 // Pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$limit = 10; // Number of rows per page set to 10
+$limit = 5; // Number of rows per page set to 5
 $offset = ($page - 1) * $limit; // Corrected offset calculation
 $totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_directory = 'CAS' && CURDATE() < valid_until || file_directory = 'General' && CURDATE() < valid_until ")->fetch_assoc()['total'];
 $totalPages = ceil($totalRecords / $limit);
@@ -201,7 +201,7 @@ $result = $mysqli->query($sql);
 
             <tr class="results" style="<?php echo $rowClass;?>">
               <td class="text-center"><?php echo $rows['id']; ?></td>
-              <td class="text-center"><?php echo substr($rows['file_name'], 0, 30); ?></td>
+              <td class="text-center"><?php echo $rows['file_name']; ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
               <td class="text-center"><?php echo $rows['valid_until'];?></td>
@@ -217,11 +217,11 @@ $result = $mysqli->query($sql);
                     if (!empty($tag)) {
                         // Remove "×" marks and extra commas
                         $tag = str_replace('×', '', $tag);
-                        $cleanedTags[] = '#' . htmlspecialchars($tag);
+                        $cleanedTags[] = '' . htmlspecialchars($tag);
                     }
                 }
 
-                $formattedTags = implode(' ', $cleanedTags);
+                $formattedTags = implode(', ', $cleanedTags);
                 echo rtrim($formattedTags, ' ');
                 ?>
               </td>
@@ -320,23 +320,6 @@ $result = $mysqli->query($sql);
             </div>
           </div>
 
-        <br></br>
-        <label for="area">File Area:</label>
-        <div class="fixed-dropdown">
-          <select name="area" id="area">
-            <option value=""></option>
-            <option value="Area 1">Vision, Mission, Goals and Objective</option>
-            <option value="Area 2">Faculty</option>
-            <option value="Area 3">Curricular</option>
-            <option value="Area 4">Support to Students</option>
-            <option value="Area 5">Research</option>
-            <option value="Area 6">Extension and Community Involvement</option>
-            <option value="Area 7">Library</option>
-            <option value="Area 8">Physical Plan and Facilities</option>
-            <option value="Area 9">Laboratories</option>
-            <option value="Area 10">Administration</option>
-          </select>
-        </div>
         <br><br>
         <label for="validUntil">Valid Until:</label>
         <input type="date" name="validUntil" id="validUntil" class="form-control">
