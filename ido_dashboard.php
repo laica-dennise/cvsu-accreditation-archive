@@ -46,6 +46,7 @@ $email = $user_info['email'];
 $first_name = $user_info['givenName'];
 $last_name = $user_info['familyName'];
 $file_owner = $first_name . " " . $last_name;
+$owner_email = $user_info['email'];
 
 /// Function to get user level
 function getUserLevel() {
@@ -66,7 +67,7 @@ function getUserLevel() {
  
 // SQL query to select data from database
 $sql = " SELECT * FROM users WHERE email = '$email' && first_name = '$first_name' && last_name = '$last_name' ";
-$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && CURDATE() > valid_until ORDER BY id ASC ";
+$sql1 = " SELECT * FROM files WHERE file_owner = '$file_owner' && owner_email = '$owner_email' && CURDATE() > valid_until ORDER BY id ASC ";
 $result = $mysqli->query($sql);
 $result1 = $mysqli->query($sql1);
 $mysqli->close();
@@ -160,7 +161,7 @@ $mysqli->close();
                     {
                 ?>
                 <tr class="results">
-                    <<td><?php echo $rows['id'];?></td>
+                    <td><?php echo $rows['id'];?></td>
                     <td><?php echo substr($rows['file_name'], 0, 40); ?></td>
                     <td><?php echo $rows['upload_date'];?></td>
                     <td><?php echo $rows['file_directory'];?></td>
