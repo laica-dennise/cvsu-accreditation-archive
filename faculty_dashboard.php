@@ -144,17 +144,16 @@ $mysqli->close();
       <div class="outdated-part">
         <div class="outdated-box">
           <div class="outdated-boxx">
-		      <div class="alert alert-info" style="margin-top:10px;width: 300px;margin-left:10px;background:linear-gradient(rgba(255, 0, 0, 0.7), rgba(255, 0, 0, 0.7));color: #fff;cursor:default;">
+		      <div class="alert alert-info" style="margin-top:10px;width:300px;margin-left:10px;background:linear-gradient(rgba(255, 0, 0, 0.7), rgba(255, 0, 0, 0.7));color: #fff;cursor:default;">
             <b>OUTDATED FILES</b>
           </div>
           <section>
             <table class="file-query">
                 <tr>
-                    <th>ID</th>
-                    <th>NAME</th>
-                    <th>DATE UPLOADED</th>
-                    <th>COLLEGE</th>
-                    <th>TAGS</th>
+                    <th style="width:300px;">NAME</th>
+                    <th style="width:200px;">DATE UPLOADED</th>
+                    <th style="width:100px;">COLLEGE</th>
+                    <th style="width:150px;">TAGS</th>
                 </tr>
 
                 <?php
@@ -162,7 +161,6 @@ $mysqli->close();
                     {
                 ?>
                 <tr class="results">
-                    <td><?php echo $rows['id'];?></td>
                     <td><?php echo substr($rows['file_name'], 0, 40); ?></td>
                     <td><?php echo $rows['upload_date'];?></td>
                     <td><?php echo $rows['file_directory'];?></td>
@@ -205,6 +203,7 @@ $mysqli->close();
           <div class="menu-content">
             <a href="uploaded_files.php">Uploaded Files</a>
             <a href="outdated_files.php">Outdated Files</a>
+            <a href="college_users.php">User List</a>
             <a href="college_directory.php">College Directory</a>
             <a href="#" data-toggle="modal" data-target="#logout">Sign Out</a>
           </div>

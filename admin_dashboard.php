@@ -149,12 +149,10 @@ $mysqli->close();
           <section>
             <table class="file-query">
                 <tr>
-                    <th>ID</th>
-                    <th>NAME</th>
-                    <th>OWNER</th>
-                    <th>DATE UPLOADED</th>
-                    <th>COLLEGE</th>
-                    <th>TAGS</th>
+                    <th style="width:300px;">NAME</th>
+                    <th style="width:200px;">DATE UPLOADED</th>
+                    <th style="width:100px;">COLLEGE</th>
+                    <th style="width:150px;">TAGS</th>
                 </tr>
 
                 <?php
@@ -162,7 +160,6 @@ $mysqli->close();
                     {
                 ?>
                 <tr class="results">
-                    <td><?php echo $rows['id'];?></td>
                     <td><?php echo substr($rows['file_name'], 0, 40); ?></td>
                     <td><?php echo $rows['file_owner'];?></td>
                     <td><?php echo $rows['upload_date'];?></td>

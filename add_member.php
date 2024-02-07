@@ -34,14 +34,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $user_level = $_POST['user_level'];
     $college = $_POST['college'];
-    $course = $_POST['course'];
 
-    if ($user_level == 2 || $user_level == 3) {
+    if ($user_level == 2) {
         if ($college == "") {
             echo "Sorry, please input a college.";
         }
         else {
-            $sql = "INSERT INTO users (first_name, last_name, email, user_level, college, course) VALUES ('$first_name', '$last_name', '$email', '$user_level', '$college', '$course')";
+            $sql = "INSERT INTO users (first_name, last_name, email, user_level, college) VALUES ('$first_name', '$last_name', '$email', '$user_level', '$college')";
             $sql2 = "DELETE FROM access_request WHERE first_name = '$first_name' && last_name = '$last_name' && email = '$email'";
         }
     }
@@ -70,5 +69,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Sorry, there was an error adding the user: " . $db_connection->error;
     }
 }
-header("Location: user_list.php");
+header("Location: utaskforce_list.php");
 ?>

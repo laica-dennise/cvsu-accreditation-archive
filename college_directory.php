@@ -41,7 +41,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     // Debug: Output user level
     echo "User Level: " . $userLevel;
 
-    if ($userLevel == '2' || $userLevel == '3') {
+    if ($userLevel == '2') {
         $college = $row['college'];
 
         switch ($college) {
@@ -72,11 +72,57 @@ if ($result && mysqli_num_rows($result) > 0) {
             case 'CVMBS':
                 header('Location: cvmbs.php');
                 exit;
-            case 'Colege of Medicine':
+            case 'College of Medicine':
                 header('Location: com.php');
                 exit;
-            case 'Graduate School':
+            case 'Graduate School and Open Learning College':
                 header('Location: graduate_school.php');
+                exit;
+
+            default:
+                echo "<script>
+                        alert('Error: This account is not assigned to a specific college.');
+                        window.location.href = 'login.php';
+                      </script>";
+                exit;
+        }
+    
+    } elseif ($userLevel == '3') {
+        $college = $row['college'];
+
+        switch ($college) {
+            case 'CAFENR':
+                header('Location: course.php');
+                exit;
+            case 'CAS':
+                header('Location: course.php');
+                exit;
+            case 'CCJ':
+                header('Location: course.php');
+                exit;
+            case 'CED':
+                header('Location: course.php');
+                exit;
+            case 'CEMDS':
+                header('Location: course.php');
+                exit;
+            case 'CEIT':
+                header('Location: course.php');
+                exit;
+            case 'CON':
+                header('Location: course.php');
+                exit;
+            case 'CSPEAR':
+                header('Location: course.php');
+                exit;
+            case 'CVMBS':
+                header('Location: course.php');
+                exit;
+            case 'Colege of Medicine':
+                header('Location: course.php');
+                exit;
+            case 'Graduate School':
+                header('Location: course.php');
                 exit;
 
             // Add more cases for other colleges as needed
@@ -88,6 +134,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                       </script>";
                 exit;
         }
+    
     } else {
         echo "<script>
                 alert('Error: This account is not authorized to access the directory.');

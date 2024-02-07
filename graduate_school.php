@@ -34,7 +34,6 @@ if ($mysqli->connect_error) {
         $mysqli->connect_error);
 }
 
-
 // Function to get user level
 function getUserLevel() {
   global $user_info, $mysqli;
@@ -52,6 +51,8 @@ function getUserLevel() {
   }
 }
 
+// Get the selected course from the form
+$selectedCourse = isset($_GET['course']) ? $_GET['course'] : '';
 
 // Pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -69,10 +70,10 @@ if ($sortOption === 'upload_date') {
     // Check if the user selected the order by date old to new
     $dateOrder = ($order === 'desc') ? 'ASC' : 'DESC';
 
-    $sql = "SELECT * FROM files WHERE file_directory = 'Graduate School and Open Learning College' && CURDATE() <= valid_until || file_directory = 'General' && CURDATE() <= valid_until ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE (file_directory = 'Graduate School and Open Learning College' || file_directory = 'General') && CURDATE() <= valid_until AND file_course = '$selectedCourse' ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
 } else {
     // For other columns
-    $sql = "SELECT * FROM files WHERE file_directory = 'Graduate School and Open Learning College' && CURDATE() <= valid_until || file_directory = 'General' && CURDATE() <= valid_until ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE (file_directory = 'Graduate School and Open Learning College' || file_directory = 'General') && CURDATE() <= valid_until AND file_course = '$selectedCourse' ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
 }
 
 $result = $mysqli->query($sql);
@@ -102,8 +103,30 @@ $result = $mysqli->query($sql);
                     <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
                 </div>
                 <div class="profile-boxx">
-                    <div class="col-md-8">
-		            <div class="alert alert-info" style="margin-top:10px;width:450px"> Graduate School and Open Learning College</div>
+                <div class="col-md-8">
+                    <div class="alert alert-info" style="margin-top: 10px; width: 600px; display: flex; align-items: center;">
+                        <span style="margin-right: 10px;">Graduate School and Open Learning College  </span>
+                        <form method="GET">
+                            <select class="form-select" id="fileDirectoryDropdown" name="course" style="width: 400px; padding: 5px; border-radius: 5px;" onchange="this.form.submit()">
+                                <option value="" <?php echo $selectedCourse === '' ? 'selected' : ''; ?>>Select Program</option>
+                                <option value="Doctor of Philosophy in Agricultural" <?php echo $selectedCourse === 'Doctor of Philosophy in Agricultural' ? 'selected' : ''; ?>>Doctor of Philosophy in Agricultural</option>
+                                <option value="Doctor of Philosophy in Education" <?php echo $selectedCourse === 'Doctor of Philosophy in Education' ? 'selected' : ''; ?>>Doctor of Philosophy in Education</option>
+                                <option value="Doctor of Philosophy in Management" <?php echo $selectedCourse === 'Doctor of Philosophy in Management' ? 'selected' : ''; ?>>Doctor of Philosophy in Management</option>
+                                <option value="Master of Arts in Education" <?php echo $selectedCourse === 'Master of Arts in Education' ? 'selected' : ''; ?>>Master of Arts in Education</option>
+                                <option value="Master of Agriculture" <?php echo $selectedCourse === 'Master of Agriculture' ? 'selected' : ''; ?>>Master of Agriculture</option>
+                                <option value="Master of Engineering" <?php echo $selectedCourse === 'Master of Engineering' ? 'selected' : ''; ?>>Master of Engineering</option>
+                                <option value="Master in Information Technology" <?php echo $selectedCourse === 'Master in Information Technology' ? 'selected' : ''; ?>>Master in Information Technology</option>
+                                <option value="Master of Management" <?php echo $selectedCourse === 'Master of Management' ? 'selected' : ''; ?>>Master of Management</option>
+                                <option value="Master of Business Administration" <?php echo $selectedCourse === 'Master of Business Administration' ? 'selected' : ''; ?>>Master of Business Administration</option>
+                                <option value="Master of Professional Studies" <?php echo $selectedCourse === 'Master of Professional Studies' ? 'selected' : ''; ?>>Master of Professional Studies</option>
+                                <option value="Master of Science in Agriculture" <?php echo $selectedCourse === 'Master of Science in Agriculture' ? 'selected' : ''; ?>>Master of Science in Agriculture</option>
+                                <option value="Master of Science in Biology" <?php echo $selectedCourse === 'Master of Science in Biology' ? 'selected' : ''; ?>>Master of Science in Biology</option>
+                                <option value="Master of Science in Food Science" <?php echo $selectedCourse === 'Master of Science in Food Science' ? 'selected' : ''; ?>>Master of Science in Food Science</option>
+                                <!-- Add more options based on your requirements -->
+                            </select>
+                        </form>
+                    </div>
+
                 <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
                 <input id="user-email" value="<?php echo $owner_email?>" hidden></input>
                  <!-- Add this form element to select sorting option and order -->
@@ -163,14 +186,13 @@ $result = $mysqli->query($sql);
         <table class="file-query table table-bordered table-hover table-striped">
         <thead>
           <tr>
-            <th class="text-center">ID</th>
-            <th class="text-center">NAME</th>
+            <th class="text-center" style="width: 250px;">NAME</th>
             <th class="text-center" style="width: 125px;">OWNER</th>
             <th class="text-center">DATE UPLOADED</th>
             <th class="text-center">VALID UNTIL</th>
-            <th class="text-center">COLLEGE</th>
-            <th class="text-center">COURSE</th>
-            <th class="text-center">TAGS</th>
+            <th class="text-center" style="width: 150px;">COLLEGE</th>
+            <th class="text-center" style="width: 150px;">COURSE</th>
+            <th class="text-center" style="width: 120px;">TAGS</th>
             <th class="text-center" colspan="3">ACTIONS</th>
           </tr>
         </thead>
@@ -200,7 +222,6 @@ $result = $mysqli->query($sql);
               ?>
 
             <tr class="results" style="<?php echo $rowClass;?>">
-              <td class="text-center"><?php echo $rows['id']; ?></td>
               <td class="text-center"><?php echo $rows['file_name']; ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
@@ -226,13 +247,13 @@ $result = $mysqli->query($sql);
                 ?>
               </td>
               <td>
-              <button class="btn btn-info btn-sm" onclick="copyLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon glyphicon-copy"></span> Copy Link</button>
-                <button class="btn btn-primary btn-sm" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span> View</button>
-                <button class="btn btn-success btn-sm" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span> Download</button>
+              <button class="btn btn-info btn-sm" onclick="copyLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon glyphicon-copy"></span></button>
+              <button class="btn btn-primary btn-sm" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span></button>
+                <button class="btn btn-success btn-sm" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span></button>
                 <?php
                   if ($rows['owner_email'] == $email) {
                   ?>
-                  <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+                  <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span></button>
                   <?php
                   }
                 ?>
@@ -310,8 +331,8 @@ $result = $mysqli->query($sql);
                 </select>
             </div>
 
-            <br></br>
-            <div class="courses" id="courses">
+        <br><br>
+        <div class="courses" id="courses">
             <label for="course">Course :</label>
             <div class="fixed-dropdown">
               <select name="course" id="course">

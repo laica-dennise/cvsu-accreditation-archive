@@ -24,32 +24,70 @@ $password = '';
 $database = 'cvsuaccr_db';
 
 $servername = '127.0.0.1';
-$mysqli = new mysqli($servername, $user,
-    $password, $database);
+$mysqli = new mysqli($servername, $user, $password, $database);
 
 // Checking for connections
 if ($mysqli->connect_error) {
-    die('Connect Error (' .
-        $mysqli->connect_errno . ') ' .
-        $mysqli->connect_error);
+    die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
 }
 
 // Function to get user level
 function getUserLevel() {
-  global $user_info, $mysqli;
+    global $user_info, $mysqli;
 
-  // Assuming your users table has a 'user_level' column
-  $email = $user_info['email'];
-  $result = $mysqli->query("SELECT user_level FROM users WHERE email = '$email'");
+    // Assuming your users table has a 'user_level' column
+    $email = $user_info['email'];
+    $result = $mysqli->query("SELECT user_level FROM users WHERE email = '$email'");
 
-  if ($result && $result->num_rows > 0) {
-      $row = $result->fetch_assoc();
-      return $row['user_level'];
-  } else {
-      // Default user level if not found
-      return 0;
-  }
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['user_level'];
+    } else {
+        // Default user level if not found
+        return 0;
+    }
 }
+
+// Function to get user's college and course
+function getUserCollegeAndCourse() {
+    global $user_info, $mysqli;
+
+    $email = $user_info['email'];
+    $result = $mysqli->query("SELECT college, course FROM users WHERE email = '$email'");
+
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row;
+    } else {
+        // Default values if not found
+        return array('college' => 'DefaultCollege', 'course' => 'DefaultCourse');
+    }
+}
+
+// Function to get files based on user's college and course
+function getFilesByUserCollegeAndCourse($college, $course) {
+    global $mysqli, $user_info;
+
+    $email = $user_info['email'];
+    $result = $mysqli->query("SELECT file_directory FROM files WHERE file_directory = '$college' AND file_course = '$course'");
+
+    if ($result && $result->num_rows > 0) {
+        $files = [];
+        while ($row = $result->fetch_assoc()) {
+            $file_directory = $row['file_directory'];
+            $files[] = "file_directory = '$file_directory' AND file_course = '$course'";
+        }
+        return implode(" OR ", $files);
+    } else {
+        // Return a default condition if user's college and course not found
+        return "file_directory = 'DefaultDirectory' AND file_course = 'DefaultCourse'";
+    }
+}
+
+// Get the user's college and course
+$userInfo = getUserCollegeAndCourse();
+$userCollege = $userInfo['college'];
+$userCourse = $userInfo['course'];
 
 // Get the selected course from the form
 $selectedCourse = isset($_GET['course']) ? $_GET['course'] : '';
@@ -58,7 +96,7 @@ $selectedCourse = isset($_GET['course']) ? $_GET['course'] : '';
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $limit = 5; // Number of rows per page set to 5
 $offset = ($page - 1) * $limit; // Corrected offset calculation
-$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE file_directory = 'CAS' && CURDATE() <= valid_until || file_directory = 'General' && CURDATE() <= valid_until ")->fetch_assoc()['total'];
+$totalRecords = $mysqli->query("SELECT COUNT(*) as total FROM files WHERE (" . getFilesByUserCollegeAndCourse($userCollege, $userCourse) . ") AND CURDATE() <= valid_until")->fetch_assoc()['total'];
 $totalPages = ceil($totalRecords / $limit);
 
 // Get the selected sorting option and order from the form
@@ -70,10 +108,10 @@ if ($sortOption === 'upload_date') {
     // Check if the user selected the order by date old to new
     $dateOrder = ($order === 'desc') ? 'ASC' : 'DESC';
 
-    $sql = "SELECT * FROM files WHERE (file_directory = 'CAS' || file_directory = 'General') && CURDATE() <= valid_until AND file_course = '$selectedCourse' ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE (" . getFilesByUserCollegeAndCourse($userCollege, $userCourse) . ") AND CURDATE() <= valid_until ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
 } else {
     // For other columns
-    $sql = "SELECT * FROM files WHERE (file_directory = 'CAS' || file_directory = 'General') && CURDATE() <= valid_until AND file_course = '$selectedCourse' ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE (" . getFilesByUserCollegeAndCourse($userCollege, $userCourse) . ") AND CURDATE() <= valid_until ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
 }
 
 $result = $mysqli->query($sql);
@@ -103,25 +141,18 @@ $result = $mysqli->query($sql);
                     <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
                 </div>
                 <div class="profile-boxx">
-                <div class="col-md-8">
-                    <div class="alert alert-info" style="margin-top: 10px; width: 500px; display: flex; align-items: center;">
-                        <span style="margin-right: 10px;">CAS  </span>
-                        <form method="GET">
-                            <select class="form-select" id="fileDirectoryDropdown" name="course" style="width: 430px; padding: 5px; border-radius: 5px;" onchange="this.form.submit()">
-                                <option value="" <?php echo $selectedCourse === '' ? 'selected' : ''; ?>>Select Program</option>
-                                <option value="Bachelor of Science in Biology" <?php echo $selectedCourse === 'Bachelor of Science in Biology' ? 'selected' : ''; ?>>Bachelor of Science in Biology</option>
-                                <option value="Bachelor of Arts in Journalism" <?php echo $selectedCourse === 'Bachelor of Arts in Journalism' ? 'selected' : ''; ?>>Bachelor of Arts in Journalism</option>
-                                <option value="Bachelor of Arts in English" <?php echo $selectedCourse === 'Bachelor of Arts in English' ? 'selected' : ''; ?>>Bachelor of Arts in English</option>
-                                <option value="Bachelor of Science in Psychology" <?php echo $selectedCourse === 'Bachelor of Science in Psychology' ? 'selected' : ''; ?>>Bachelor of Science in Psychology</option>
-                                <option value="Bachelor of Arts in Political Science" <?php echo $selectedCourse === 'Bachelor of Arts in Political Science' ? 'selected' : ''; ?>>Bachelor of Arts in Political Science</option>
-                                <option value="Bachelor of Science in Social Work" <?php echo $selectedCourse === 'Bachelor of Science in Social Work' ? 'selected' : ''; ?>>Bachelor of Science in Social Work</option>
-                                <option value="Bachelor of Science in Applied Mathematics (Major in Statistics)" <?php echo $selectedCourse === 'Bachelor of Science in Applied Mathematics (Major in Statistics)' ? 'selected' : ''; ?>>Bachelor of Science in Applied Mathematics (Major in Statistics)</option>
-                                <!-- Add more options based on your requirements -->
-                            </select>
-                        </form>
-                    </div>
+                            <div class="col-md-8">
+                                <?php
+                                // Get the user's college and course
+                                $userInfo = getUserCollegeAndCourse();
+                                $userCollege = $userInfo['college'];
+                                $userCourse = $userInfo['course'];
+                                ?>
+                                <div class="alert alert-info" style="margin-top: 10px; width: 500px; display: flex; align-items: center;">
+                                    <span style="margin-right: 10px;"><?php echo $userCourse; ?></span>
+                                </div>
 
-                <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
+                <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 4) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
                 <input id="user-email" value="<?php echo $owner_email?>" hidden></input>
                  <!-- Add this form element to select sorting option and order -->
                  <form class="sort-form" method="GET">
@@ -146,7 +177,6 @@ $result = $mysqli->query($sql);
 </form>
             </div>
             
-
             <div id="nav-bar" class="nav-bar">
           <img src="images/cvsu-logo.png" class="logo">
             <p class="title">CvSU Accreditation Archive System</p>
@@ -286,7 +316,6 @@ $result = $mysqli->query($sql);
     </div>
 	</div>
 
-
       <div class="side-navigation">
       <div id="mySidenav" class="side-nav-content">
           <a href="javascript:void(0)" class="close-button" onclick="closeNav()">&times;</a>
@@ -304,7 +333,6 @@ $result = $mysqli->query($sql);
         </div>
       </div>
 
-
           <!-- Modal Upload -->
 <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -320,8 +348,8 @@ $result = $mysqli->query($sql);
         <label for="directories">File Directory:</label>
           <div class="fixed-dropdown">
           <select name="directories" id="directories" onchange="updateCourseOptions();showCourse();" required>
-                <option value=""></option>
-                <option value="CAS">CAS</option>
+                <option value="">Select College</option>
+                <option value="CAFENR">CAFENR</option>
                 </select>
             </div>
 
@@ -330,15 +358,14 @@ $result = $mysqli->query($sql);
             <label for="course">Course :</label>
             <div class="fixed-dropdown">
               <select name="course" id="course">
-                <option value=""></option>
+                <option value="">Select Program</option>
               </select>
             </div>
           </div>
-          
-        <br><br>
-        <label for="validUntil">Valid Until:</label>
-        <input type="date" name="validUntil" id="validUntil" class="form-control">
-        <br>
+          <br>
+          <label for="validUntil" style="<?php echo (getUserLevel() != 0 && getUserLevel() != 1) ? 'display:none;' : ''; ?>">Valid Until:</label>
+          <input type="date" name="validUntil" id="validUntil" class="form-control" style="<?php echo (getUserLevel() != 0 && getUserLevel() != 1) ? 'display:none;' : ''; ?>">
+          <br>
         <input type="hidden" name="tags" id="hiddenTagsInput" value="">
         <label for="tags">Tags (Press Enter to add a tag):</label>
         <div id="tagsInputContainer" style="display: flex; flex-wrap: wrap; gap: 5px; padding: 5px; border: 1px solid #ccc; border-radius: 5px;"></div>
@@ -394,10 +421,8 @@ $result = $mysqli->query($sql);
   </div>
 </div>
 
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
 
   <script>
     function openLink(link) {
@@ -676,8 +701,6 @@ $result = $mysqli->query($sql);
           $('#modal_remove').modal('hide');
       }
     </script>
-
-
 
     <script type="text/javascript" src="./js/gapi-upload.js"></script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>

@@ -124,8 +124,9 @@ $mysqli->close();
               <li class="profile-pic"><img class="pic" src="<?=$user_info['picture'];?>" referrerpolicy="no-referrer" width="150px" height="150px"></li>
               <li style="cursor:default;font-size:15px;"><strong>Full Name:</strong> <?=$user_info['givenName'];?> <?=$user_info['familyName'];?></li>
               <li style="cursor:default;font-size:15px;"><strong>Email:</strong> <?=$user_info['email'];?></li>
-              <li style="cursor:default;font-size:15px;"><strong>User Level:</strong> Student</li>
+              <li style="cursor:default;font-size:15px;"><strong>User Level:</strong> College Accreditation Taskforce</li>
               <li style="cursor:default;font-size:15px;"><strong>College:</strong> <?=$rows['college'];?></li>
+              <li style="cursor:default;font-size:15px;"><strong>Program:</strong> <?=$rows['course'];?></li>
             </ul>
           <?php
             }

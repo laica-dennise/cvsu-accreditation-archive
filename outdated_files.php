@@ -130,6 +130,7 @@ $result2 = $mysqli->query($sql);
                 <a href="profile.php" style="<?php echo (getUserLevel() != 3) ? 'display:none;' : ''; ?>">Profile</a>
                 <a href="uploaded_files.php" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : ''; ?>">Uploaded Files</a>
                 <a href="user_list.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">User List</a>
+                <a href="college_users.php" style="<?php echo (getUserLevel() != 2) ? 'display:none;' : ''; ?>">User List</a>
                 <a href="logs.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">Activity Logs</a>
                 <a href="college_directory.php" style="<?php echo (getUserLevel() != 2) ? 'display:none;' : ''; ?>">College Directory</a>
                 <a href="college_directory.php" style="<?php echo (getUserLevel() != 3) ? 'display:none;' : ''; ?>">College Directory</a>
@@ -148,15 +149,14 @@ $result2 = $mysqli->query($sql);
         <table class="file-query table table-bordered table-hover table-striped">
         <thead>
           <tr>
-          <th class="text-center">ID</th>
-            <th class="text-center" style="width: 250px;">NAME</th>
-            <th class="text-center" style="width: 125px;">OWNER</th>
-            <th class="text-center">DATE UPLOADED</th>
-            <th class="text-center">VALID UNTIL</th>
-            <th class="text-center" style="width: 150px;">COLLEGE</th>
-            <th class="text-center" style="width: 150px;">COURSE</th>
-            <th class="text-center" style="width: 120px;">TAGS</th>
-            <th class="text-center" colspan="3">ACTIONS</th>
+            <th class="text-center" style="width: 400px;">NAME</th>
+            <th class="text-center" style="width: 125px;<?php echo (getUserLevel() == 1) ? 'display:none;' : ''; ?>;<?php echo (getUserLevel() == 2) ? 'display:none;' : ''; ?>;">OWNER</th>
+            <th class="text-center" style="width: 150px;">DATE UPLOADED</th>
+            <th class="text-center">EXPIRED ON</th>
+            <th class="text-center" style="width: 150px;<?php echo (getUserLevel() == 2) ? 'display:none;' : ''; ?>;">COLLEGE</th>
+            <th class="text-center" style="width: 350px;">PROGRAM</th>
+            <th class="text-center" style="width: 150px;">TAGS</th>
+            <th class="text-center" style="width: 150px;" colspan="3">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -166,7 +166,6 @@ $result2 = $mysqli->query($sql);
             $fileId = $rows['file_id'];
           ?>
           <tr class="results" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">
-              <td class="text-center"><?php echo $rows['id']; ?></td>
               <td class="text-center"><?php echo $rows['file_name']; ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
@@ -192,12 +191,12 @@ $result2 = $mysqli->query($sql);
                 ?>
               </td>
               <td>
-              <button class="btn btn-primary btn-sm" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span> View</button>
-                <button class="btn btn-success btn-sm" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span> Download</button>
+              <button class="btn btn-primary btn-sm" title="View" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span></button>
+                <button class="btn btn-success btn-sm" title="Download" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span></button>
                 <?php
                   if ($rows['owner_email'] == $email) {
                   ?>
-                  <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+                  <button class="btn btn-danger btn-delete" title="Remove" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span></button>
                   <?php
                   }
                 ?>
@@ -212,9 +211,7 @@ $result2 = $mysqli->query($sql);
             $fileId = $rows['file_id'];
           ?>
             <tr class="results1" style="<?php echo (getUserLevel() != 1) ? 'display:none;' : '';?>">
-              <td class="text-center"><?php echo $rows['id']; ?></td>
               <td class="text-center"><?php echo $rows['file_name']; ?></td>
-              <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
               <td class="text-center"><?php echo $rows['valid_until'];?></td>
               <td class="text-center"><?php echo $rows['file_directory'];?></td>
@@ -238,12 +235,12 @@ $result2 = $mysqli->query($sql);
                 ?>
               </td>
               <td>
-                <button class="btn btn-primary btn-sm" onclick="window.location.href='<?php echo $rows['file_viewLink'];?>'"><span class="glyphicon glyphicon-eye-open"></span> View</button>
-                <button class="btn btn-success btn-sm" onclick="window.location.href='<?php echo $rows['file_downloadLink'];?>'"><span class="glyphicon glyphicon-download-alt"></span> Download</button>
+                <button class="btn btn-primary btn-sm" title="View" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span></button>
+                <button class="btn btn-success btn-sm" title="Download" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span></button>
                 <?php
                   if ($rows['owner_email'] == $email) {
                   ?>
-                  <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+                  <button class="btn btn-danger btn-delete" title="Remove" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span></button>
                   <?php
                   }
                 ?>
@@ -258,12 +255,9 @@ $result2 = $mysqli->query($sql);
             $fileId = $rows['file_id'];
           ?>
             <tr class="results2" style="<?php echo (getUserLevel() != 2) ? 'display:none;' : '';?>">
-              <td class="text-center"><?php echo $rows['id']; ?></td>
               <td class="text-center"><?php echo $rows['file_name']; ?></td>
-              <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
               <td class="text-center"><?php echo $rows['valid_until'];?></td>
-              <td class="text-center"><?php echo $rows['file_directory'];?></td>
               <td class="text-center"><?php echo $rows['file_course'];?></td>
               <td class="text-center">
                 <?php
@@ -284,13 +278,12 @@ $result2 = $mysqli->query($sql);
                 ?>
               </td>
               <td>
-              <button class="btn btn-info btn-sm" onclick="copyLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon glyphicon-copy"></span> Copy Link</button>
-                <button class="btn btn-primary btn-sm" onclick="window.location.href='<?php echo $rows['file_viewLink'];?>'"><span class="glyphicon glyphicon-eye-open"></span> View</button>
-                <button class="btn btn-success btn-sm" onclick="window.location.href='<?php echo $rows['file_downloadLink'];?>'"><span class="glyphicon glyphicon-download-alt"></span> Download</button>
+                <button class="btn btn-primary btn-sm" title="View" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span></button>
+                <button class="btn btn-success btn-sm" title="Download" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span></button>
                 <?php
                   if ($rows['owner_email'] == $email) {
                   ?>
-                  <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+                  <button class="btn btn-danger btn-delete" title="Remove" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span></button>
                   <?php
                   }
                 ?>

@@ -34,7 +34,6 @@ if ($mysqli->connect_error) {
         $mysqli->connect_error);
 }
 
-
 // Function to get user level
 function getUserLevel() {
   global $user_info, $mysqli;
@@ -51,7 +50,8 @@ function getUserLevel() {
       return 0;
   }
 }
-
+// Get the selected course from the form
+$selectedCourse = isset($_GET['course']) ? $_GET['course'] : '';
 
 // Pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -69,10 +69,10 @@ if ($sortOption === 'upload_date') {
     // Check if the user selected the order by date old to new
     $dateOrder = ($order === 'desc') ? 'ASC' : 'DESC';
 
-    $sql = "SELECT * FROM files WHERE file_directory = 'CAFENR' && CURDATE() <= valid_until || file_directory = 'General' && CURDATE() <= valid_until YEAR ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE (file_directory = 'CAFENR' || file_directory = 'General') && CURDATE() <= valid_until AND file_course = '$selectedCourse' ORDER BY STR_TO_DATE(upload_date, '%Y-%m-%d') $dateOrder LIMIT $limit OFFSET $offset";
 } else {
     // For other columns
-    $sql = "SELECT * FROM files WHERE file_directory = 'CAFENR' && CURDATE() <= valid_until || file_directory = 'General' && CURDATE() <= valid_until ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM files WHERE (file_directory = 'CAFENR' || file_directory = 'General') && CURDATE() <= valid_until AND file_course = '$selectedCourse' ORDER BY $sortOption $order LIMIT $limit OFFSET $offset";
 }
 
 $result = $mysqli->query($sql);
@@ -102,15 +102,29 @@ $result = $mysqli->query($sql);
                     <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
                 </div>
                 <div class="profile-boxx">
-                    <div class="col-md-8">
-		            <div class="alert alert-info" style="margin-top:10px;width:450px"> CAFENR</div>
+                <div class="col-md-8">
+                    <div class="alert alert-info" style="margin-top: 10px; width: 500px; display: flex; align-items: center;">
+                        <span style="margin-right: 10px;">CAFENR  </span>
+                        <form method="GET">
+                            <select class="form-select" id="fileDirectoryDropdown" name="course" style="width: 400px; padding: 5px; border-radius: 5px;" onchange="this.form.submit()">
+                                <option value="" <?php echo $selectedCourse === '' ? 'selected' : ''; ?>>Select Program</option>
+                                <option value="Bachelor of Science in Agriculture" <?php echo $selectedCourse === 'Bachelor of Science in Agriculture' ? 'selected' : ''; ?>>Bachelor of Science in Agriculture</option>
+                                <option value="Bachelor of Science in Environmental Science" <?php echo $selectedCourse === 'Bachelor of Science in Environmental Science' ? 'selected' : ''; ?>>Bachelor of Science in Environmental Science</option>
+                                <option value="Bachelor of Science in Food Technology" <?php echo $selectedCourse === 'Bachelor of Science in Food Technology' ? 'selected' : ''; ?>>Bachelor of Science in Food Technology</option>
+                                <option value="Bachelor of Science in Land Use Design and Management" <?php echo $selectedCourse === 'Bachelor of Science in Land Use Design and Management' ? 'selected' : ''; ?>>Bachelor of Science in Land Use Design and Management</option>
+                                <option value="Bachelor in Agricultural Entrepreneurship" <?php echo $selectedCourse === 'Bachelor in Agricultural Entrepreneurship' ? 'selected' : ''; ?>>Bachelor in Agricultural Entrepreneurship</option>
+                                <option value="Certificate in Agricultural Science" <?php echo $selectedCourse === 'Certificate in Agricultural Science' ? 'selected' : ''; ?>>Certificate in Agricultural Science</option>
+                            <!-- Add more options based on your requirements -->
+                            </select>
+                        </form>
+                    </div>
+
                 <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
                 <input id="user-email" value="<?php echo $owner_email?>" hidden></input>
                  <!-- Add this form element to select sorting option and order -->
                  <form class="sort-form" method="GET">
     <label for="sort">Sort By:</label>
     <select class="form-select" name="sort" id="sort">
-        <option value="id">ID</option>
         <option value="file_name">Name</option>
         <option value="file_owner">Owner</option>
         <option value="upload_date">Date Uploaded</option>
@@ -129,7 +143,6 @@ $result = $mysqli->query($sql);
 </form>
             </div>
             
-
             <div id="nav-bar" class="nav-bar">
           <img src="images/cvsu-logo.png" class="logo">
             <p class="title">CvSU Accreditation Archive System</p>
@@ -163,7 +176,6 @@ $result = $mysqli->query($sql);
         <table class="file-query table table-bordered table-hover table-striped">
         <thead>
           <tr>
-          <th class="text-center">ID</th>
             <th class="text-center" style="width: 250px;">NAME</th>
             <th class="text-center" style="width: 125px;">OWNER</th>
             <th class="text-center">DATE UPLOADED</th>
@@ -200,7 +212,6 @@ $result = $mysqli->query($sql);
               ?>
 
             <tr class="results" style="<?php echo $rowClass;?>">
-              <td class="text-center"><?php echo $rows['id']; ?></td>
               <td class="text-center"><?php echo $rows['file_name']; ?></td>
               <td class="text-center"><?php echo $rows['file_owner'];?></td>
               <td class="text-center"><?php echo $rows['upload_date'];?></td>
@@ -226,13 +237,13 @@ $result = $mysqli->query($sql);
                 ?>
               </td>
               <td>
-              <button class="btn btn-info btn-sm" onclick="copyLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon glyphicon-copy"></span> Copy Link</button>
-              <button class="btn btn-primary btn-sm" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span> View</button>
-                <button class="btn btn-success btn-sm" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span> Download</button>
+              <button class="btn btn-info btn-sm" title="Copy Link" onclick="copyLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon glyphicon-copy"></span></button>
+              <button class="btn btn-primary btn-sm" title="View" onclick="openLink('<?php echo $rows['file_viewLink'];?>')"><span class="glyphicon glyphicon-eye-open"></span></button>
+                <button class="btn btn-success btn-sm" title="Download" onclick="openLink('<?php echo $rows['file_downloadLink'];?>')"><span class="glyphicon glyphicon-download-alt"></span></button>
                 <?php
                   if ($rows['owner_email'] == $email) {
                   ?>
-                  <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+                  <button class="btn btn-danger btn-delete" style="height:30px;font-size:12px;" type="button" onclick="handleAuthClick()" data-toggle="modal" data-target="#modal_remove" data-id="<?php echo $fileId;?>" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>"><span class="glyphicon glyphicon-trash"></span></button>
                   <?php
                   }
                 ?>
@@ -271,7 +282,6 @@ $result = $mysqli->query($sql);
     </div>
 	</div>
 
-
       <div class="side-navigation">
       <div id="mySidenav" class="side-nav-content">
           <a href="javascript:void(0)" class="close-button" onclick="closeNav()">&times;</a>
@@ -289,7 +299,6 @@ $result = $mysqli->query($sql);
         </div>
       </div>
 
-
           <!-- Modal Upload -->
 <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -305,7 +314,7 @@ $result = $mysqli->query($sql);
         <label for="directories">File Directory:</label>
           <div class="fixed-dropdown">
           <select name="directories" id="directories" onchange="updateCourseOptions();showCourse();" required>
-                <option value=""></option>
+                <option value="">Select College</option>
                 <option value="CAFENR">CAFENR</option>
                 </select>
             </div>
@@ -315,15 +324,14 @@ $result = $mysqli->query($sql);
             <label for="course">Course :</label>
             <div class="fixed-dropdown">
               <select name="course" id="course">
-                <option value=""></option>
+                <option value="">Select Program</option>
               </select>
             </div>
           </div>
-          
-        <br><br>
-        <label for="validUntil">Valid Until:</label>
-        <input type="date" name="validUntil" id="validUntil" class="form-control">
-        <br>
+          <br>
+          <label for="validUntil" style="<?php echo (getUserLevel() != 0 && getUserLevel() != 1) ? 'display:none;' : ''; ?>">Valid Until:</label>
+          <input type="date" name="validUntil" id="validUntil" class="form-control" style="<?php echo (getUserLevel() != 0 && getUserLevel() != 1) ? 'display:none;' : ''; ?>">
+          <br>
         <input type="hidden" name="tags" id="hiddenTagsInput" value="">
         <label for="tags">Tags (Press Enter to add a tag):</label>
         <div id="tagsInputContainer" style="display: flex; flex-wrap: wrap; gap: 5px; padding: 5px; border: 1px solid #ccc; border-radius: 5px;"></div>
@@ -379,10 +387,8 @@ $result = $mysqli->query($sql);
   </div>
 </div>
 
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
 
   <script>
     function openLink(link) {
@@ -661,8 +667,6 @@ $result = $mysqli->query($sql);
           $('#modal_remove').modal('hide');
       }
     </script>
-
-
 
     <script type="text/javascript" src="./js/gapi-upload.js"></script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
