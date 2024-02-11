@@ -115,6 +115,8 @@ if ($result) {
 
     $sql3 = "SELECT college FROM users WHERE email = '$email'";
     $result3 = $mysqli->query($sql3);
+    $selectedCollege = $result3;
+
     $mysqli->close();
 }
 
@@ -392,17 +394,17 @@ if ($result) {
         <div class="modal-body">
         <form action="add_user.php" method="POST" enctype="multipart/form-data" id="register">
         <fieldset class="info">
-        <input placeholder="First Name" name="first_name" id="first_name" type="text" tabindex="1" autofocus required>
+        <input placeholder="First Name" name="first_name" id="first_name" type="text" tabindex="1" onkeydown="return /[a-zA-Z]/i.test(event.key)" autofocus required>
       </fieldset>
       <fieldset class="info">
-        <input placeholder="Last Name" name="last_name" id="last_name" type="text" autofocus required>
+        <input placeholder="Last Name" name="last_name" id="last_name" type="text" onkeydown="return /[a-zA-Z]/i.test(event.key)" autofocus required>
       </fieldset>
       <fieldset>
-        <input placeholder="Email Address" name="email" id="email" type="email" tabindex="2" style="width:250px"required>
+        <input placeholder="Email Address" name="email" id="email" type="email" tabindex="2" style="width:250px" onkeydown="return /[a-zA-Z0-9_.@]/i.test(event.key)" required>
       </fieldset>
       <fieldset class="info">
         <legend class="user-level">Access as</legend>
-          <select name="user_level" id="user_level">
+          <select name="user_level" id="user_level" disabled>
             <option value="3">College Accreditation Taskforce</option>
           </select>
       </fieldset>
@@ -460,14 +462,14 @@ if ($result) {
       </fieldset>
       <fieldset class="info">
         <legend class="user-level">User Level</legend>
-          <select name="userLevel" id="userLevel" onchange="showUserCollege()">
+          <select name="userLevel" id="userLevel" onchange="showUserCollege()" disabled>
             <option value="3">College Accreditation Taskforce</option>
           </select>
       </fieldset>
       <div id="college-selectionn" class="college-selectionn">
       <fieldset>
       <legend class="college">College</legend>
-            <select name="userCollege" id="userCollege" onchange="updateCourseOptionss();showCourse();">
+            <select name="userCollege" id="userCollege" disabled>
                 <option value=""></option>
                 <option value="CAFENR">CAFENR</option>
                 <option value="CAS">CAS</option>
@@ -484,9 +486,13 @@ if ($result) {
         </fieldset>
         <div class="courses" id="courses">
             <fieldset class="info">
-            <legend class="course">Course</legend>
+            <legend class="course">Program</legend>
               <select name="userCourse" id="userCourse" style="width: 450px;">
-                <option value=""></option>
+                <option value="Bachelor of Science in Agriculture" style="<?php echo $selectedCollege == 'CAFENR' ? 'display:block' : ''; ?>">Bachelor of Science in Agriculture</option>
+                <option value="Bachelor of Science in Environmental Science" style="<?php echo $selectedCollege == 'CAFENR' ? 'display:block' : ''; ?>">Bachelor of Science in Environmental Science</option>
+                <option value="Bachelor of Science in Food Technology" style="<?php echo $selectedCollege == 'CAFENR' ? 'display:block' : ''; ?>">Bachelor of Science in Food Technology</option>
+                <option value="Bachelor in Agricultural Entrepreneurship" style="<?php echo $selectedCollege == 'CAFENR' ? 'display:block' : ''; ?>">Bachelor in Agricultural Entrepreneurship</option>
+                <option value="Certificate in Agricultural Science" style="<?php echo $selectedCollege == 'CAFENR' ? 'display:block' : ''; ?>">Certificate in Agricultural Science</option>
               </select>
             </fieldset>
         </div>
@@ -574,28 +580,10 @@ if ($result) {
       }
     }
 
-    function updateCourseOptionss() {
-      var selectedCollege = document.getElementById('userCollege').value;
-      var courseDropdown = document.getElementById('userCourse');
-      courseDropdown.innerHTML = ''; // Clear existing options
-
-      if (selectedCollege !== '') {
-        var courses = getCourseOptions(selectedCollege);
-
-        // Populate "Course" dropdown with options
-        for (var i = 0; i < courses.length; i++) {
-          var option = document.createElement('option');
-          option.value = courses[i];
-          option.text = courses[i];
-          courseDropdown.add(option);
-        }
-      }
-    }
-
     // Function to get course options based on selected college
     function getCourseOptions(college) {
       var courseOptions = {
-        'CAFENR': ['Bachelor of Science in Agriculture', 'Bachelor of Science in Environmental Science', 'Bachelor of Science in Food Technology', 'Bachelor of Science in Land Use Design and Management', 'Bachelor in Agricultural Entrepreneurship', 'Certificate in Agricultural Science'],
+        'CAFENR': ['Bachelor of Science in Agriculture', 'Bachelor of Science in Environmental Science', 'Bachelor of Science in Food Technology', 'Bachelor in Agricultural Entrepreneurship', 'Certificate in Agricultural Science'],
         'CAS': ['Bachelor of Science in Biology', 'Bachelor of Arts in Journalism', 'Bachelor of Arts in English', 'Bachelor of Science in Psychology', 'Bachelor of Arts in Political Science', 'Bachelor of Science in Social Work', 'Bachelor of Science in Applied Mathematics (Major in Statistics)'], 
         'CCJ': ['Bachelor of Science in Criminology', 'Bachelor of Science in Industrial Security Administration'], 
         'CED': ['Bachelor of Secondary Education', 'Bachelor of Elementary Education', 'Bachelor of Hotel and Restaurant Management', 'Bachelor of Tourism Management'], 
@@ -610,6 +598,37 @@ if ($result) {
 
       return courseOptions[college] || [];
     }
+
+    var collegePrograms = {
+        CAFENR: ['Bachelor of Science in Agriculture', 'Bachelor of Science in Environmental Science', 'Bachelor of Science in Food Technology', 'Bachelor of Science in Land Use Design and Management', 'Bachelor in Agricultural Entrepreneurship', 'Certificate in Agricultural Science'],
+        CAS: ['Bachelor of Science in Biology', 'Bachelor of Arts in Journalism', 'Bachelor of Arts in English', 'Bachelor of Science in Psychology', 'Bachelor of Arts in Political Science', 'Bachelor of Science in Social Work', 'Bachelor of Science in Applied Mathematics (Major in Statistics)'], 
+        CCJ: ['Bachelor of Science in Criminology', 'Bachelor of Science in Industrial Security Administration'], 
+        CED: ['Bachelor of Secondary Education', 'Bachelor of Elementary Education', 'Bachelor of Hotel and Restaurant Management', 'Bachelor of Tourism Management'], 
+        CEMDS: ['Bachelor of Science in Office Administration', 'Bachelor of Science in Accountancy', 'Bachelor of Science in Business Administration', 'Bachelor of Science in Economics', 'Bachelor of Science in Development Management', 'Bachelor of Science in International Studies'], 
+        CEIT: ['Bachelor of Science in Agricultural and Biosystems Engineering', 'Bachelor of Science in Architecture', 'Bachelor of Science in Civil Engineering', 'Bachelor of Science in Computer Engineering', 'Bachelor of Science in Computer Science', 'Bachelor of Science in Electrical Engineering', 'Bachelor of Science in Electronics Engineering', 'Bachelor of Science in Industrial Engineering', 'Bachelor of Science in Industrial Technology', 'Bachelor of Science in Information Technology', 'Bachelor of Science in Office Administration'], 
+        CON: ['Bachelor of Science in Nursing', 'Bachelor of Science in Medical Technology', 'Bachelor of Science in Midwifery'], 
+        CSPEAR: ['Bachelor of Physical Education', 'Bachelor in Sports and Recreational Management'], 
+        CVMBS: ['Doctor of Veterinary Medicine', 'Bachelor of Science in Veterinary Technology', 'Bachelor of Science in Animal Health and Management', 'Bachelor of Science in Biomedical Science'], 
+        Graduate School and Open Learning College: ['Doctor of Philosophy in Agricultural', 'Doctor of Philosophy in Education', 'Doctor of Philosophy in Management', 'Master of Arts in Education', 'Master of Agriculture', 'Master of Engineering', 'Master in Information Technology', 'Master of Management', 'Master of Business Administration', 'Master of Professional Studies', 'Master of Science in Agriculture', 'Master of Science in Biology', 'Master of Science in Food Science'], 
+      };
+
+    function updateProgramOptions() {
+      var collegeSelect = document.getElementById('userCollege');
+      var courseSelect = document.getElementById('userCourse');
+
+      courseSelect.innerHTML = '';
+
+      var selectedCollege = collegeSelect.value;
+
+      var programs = collegePrograms[selectedCollege];
+      if (programs) {
+        programs.forEach(function(program) {
+          courseSelect.add(new Option(program, program));
+        });
+      }
+    }
+
+    updateProgramOptions();
 
     function register() {
         document.getElementById('register').submit();
@@ -632,7 +651,7 @@ if ($result) {
         document.getElementById("main").style.marginLeft = "0";
       }
 
-      function openEditModal(firstName, lastName, userEmail, userLevel, userCollege, userCourse) {
+    function openEditModal(firstName, lastName, userEmail, userLevel, userCollege, userCourse) {
     // Populate modal fields with current user information
     document.getElementById('firstName').value = firstName;
     document.getElementById('lastName').value = lastName;

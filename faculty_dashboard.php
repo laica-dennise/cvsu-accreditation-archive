@@ -148,12 +148,12 @@ $mysqli->close();
             <b>OUTDATED FILES</b>
           </div>
           <section>
-            <table class="file-query">
+            <table class="file-query" style="width:100%;">
                 <tr>
-                    <th style="width:300px;">NAME</th>
-                    <th style="width:200px;">DATE UPLOADED</th>
-                    <th style="width:100px;">COLLEGE</th>
-                    <th style="width:150px;">TAGS</th>
+                    <th style="width:250px;">NAME</th>
+                    <th style="width:150px;">DATE UPLOADED</th>
+                    <th style="width:200px;">PROGRAM</th>
+                    <th style="width:100px;">TAGS</th>
                 </tr>
 
                 <?php
@@ -163,7 +163,7 @@ $mysqli->close();
                 <tr class="results">
                     <td><?php echo substr($rows['file_name'], 0, 40); ?></td>
                     <td><?php echo $rows['upload_date'];?></td>
-                    <td><?php echo $rows['file_directory'];?></td>
+                    <td><?php echo $rows['file_course'];?></td>
                     <td class="text-center">
                       <?php
                       $tags = explode(',', $rows['file_tags']);

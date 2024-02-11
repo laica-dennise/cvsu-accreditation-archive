@@ -152,13 +152,12 @@ $result = $mysqli->query($sql);
                                     <span style="margin-right: 10px;"><?php echo $userCourse; ?></span>
                                 </div>
 
-                <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 4) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
+                <a href="#" id="authorizationButton" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : '';?>" onclick="handleAuthClick()" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Upload File </a>
                 <input id="user-email" value="<?php echo $owner_email?>" hidden></input>
                  <!-- Add this form element to select sorting option and order -->
                  <form class="sort-form" method="GET">
     <label for="sort">Sort By:</label>
     <select class="form-select" name="sort" id="sort">
-        <option value="id">ID</option>
         <option value="file_name">Name</option>
         <option value="file_owner">Owner</option>
         <option value="upload_date">Date Uploaded</option>

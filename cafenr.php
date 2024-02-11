@@ -160,6 +160,7 @@ $result = $mysqli->query($sql);
                 <a href="uploaded_files.php" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : ''; ?>">Uploaded Files</a>
                 <a href="outdated_files.php" style="<?php echo (getUserLevel() == 3) ? 'display:none;' : ''; ?>">Outdated Files</a>
                 <a href="user_list.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">User List</a>
+                <a href="college_users.php" style="<?php echo (getUserLevel() != 2) ? 'display:none;' : ''; ?>">User List</a>
                 <a href="logs.php" style="<?php echo (getUserLevel() != 0) ? 'display:none;' : ''; ?>">Activity Logs</a>
                 <a href="#" data-toggle="modal" data-target="#logout">Sign Out</a>
               </div>

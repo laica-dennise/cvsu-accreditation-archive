@@ -384,19 +384,20 @@ $mysqli->close();
         <div class="modal-body">
         <form action="add_user.php" method="POST" enctype="multipart/form-data" id="register">
         <fieldset class="info">
-        <input placeholder="First Name" name="first_name" id="first_name" type="text" tabindex="1" autofocus required>
+        <input placeholder="First Name" name="first_name" id="first_name" type="text" tabindex="1" onkeydown="return /[a-zA-Z]/i.test(event.key)" autofocus required>
       </fieldset>
       <fieldset class="info">
-        <input placeholder="Last Name" name="last_name" id="last_name" type="text" autofocus required>
+        <input placeholder="Last Name" name="last_name" id="last_name" type="text" onkeydown="return /[a-zA-Z]/i.test(event.key)" autofocus required>
       </fieldset>
       <fieldset>
-        <input placeholder="Email Address" name="email" id="email" type="email" tabindex="2" style="width:250px"required>
+        <input placeholder="Email Address" name="email" id="email" type="email" tabindex="2" style="width:250px" onkeydown="return /[a-zA-Z]/i.test(event.key)" required>
       </fieldset>
       <fieldset class="info">
         <legend class="user-level">Access as</legend>
           <select name="user_level" id="user_level" onchange="showCollege()">
             <option value="1">IDO</option>
             <option value="2">College Accreditation Officer</option>
+            <option value="2">College Accreditation Taskforce</option>
           </select>
       </fieldset>
       <div id="college-selection" class="college-selection">
